@@ -5,10 +5,14 @@ import la "core:math/linalg"
 import "core:strings"
 import rl "vendor:raylib"
 
+WINDOW_WIDTH :: 1280
+WINDOW_HEIGHT :: 720
+
 PLAYER_SPEED :: 500.0
 
 Game :: struct {
 	world: struct {
+		camera:   rl.Camera2D,
 		player:   ^Entity,
 		entities: [dynamic]Entity,
 	},
@@ -27,36 +31,41 @@ Entity :: struct {
 }
 
 main :: proc() {
-	rl.InitWindow(1280, 720, "Hellope!")
+	// INITIALIZE
+	//----------------------------------------------------------------------------------
 
+	rl.InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Odin play!")
 
-	// INIT GAME
-	// -----------------------
 	game := Game {
-		world = {entities = [dynamic]Entity{}},
+		world = {
+			camera = rl.Camera2D{offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, zoom = 1.0},
+			entities = [dynamic]Entity{},
+		},
 	}
 
-	// player
+	// player entity
 	append(
 		&game.world.entities,
 		Entity{"Player", {0, 0, 50, 50}, rl.LoadTexture("textures/player.png")},
 	)
 	game.world.player = &game.world.entities[0]
 
-	// entities
+	// non-player entities
 	append(
 		&game.world.entities,
 		Entity{"Obstacle", {250, 500, 500, 50}, rl.LoadTexture("textures/obstacle.jpg")},
 	)
 
-	// -----------------------
+	//----------------------------------------------------------------------------------
 
 	for !rl.WindowShouldClose() {
-		// HANDLE PLAYER INPUT
-		// -----------------------
+		// UPDATE
+		//----------------------------------------------------------------------------------
+
 		{
 			using game.world
 
+			// calculate player movement
 			move := rl.Vector2{0, 0}
 			if rl.IsKeyDown(.W) do move.y = -1
 			if rl.IsKeyDown(.S) do move.y = 1
@@ -64,6 +73,7 @@ main :: proc() {
 			if rl.IsKeyDown(.D) do move.x = 1
 			move = la.normalize0(move) * rl.GetFrameTime() * PLAYER_SPEED
 
+			// x-axis
 			player.rect.x += move.x
 			for &entity in entities {
 				if player != &entity && rl.CheckCollisionRecs(player.rect, entity.rect) {
@@ -72,6 +82,7 @@ main :: proc() {
 				}
 			}
 
+			// y-axis
 			player.rect.y += move.y
 			for &entity in entities {
 				if player != &entity && rl.CheckCollisionRecs(player.rect, entity.rect) {
@@ -79,17 +90,27 @@ main :: proc() {
 					break
 				}
 			}
+
+			// point camera to player
+			game.world.camera.target = {
+				player.rect.x + player.rect.width / 2,
+				player.rect.y + player.rect.height / 2,
+			}
 		}
-		// -----------------------
+
+		//----------------------------------------------------------------------------------
+
+
+		// DRAW
+		//----------------------------------------------------------------------------------
 
 		rl.BeginDrawing()
+		rl.ClearBackground(rl.BLUE)
 
-		// DRAW GAME WORLD
-		// -----------------------
+		// World
 		{
 			using game.world
-
-			rl.ClearBackground(rl.BLUE)
+			rl.BeginMode2D(camera)
 
 			// entities
 			for &entity in entities {
@@ -102,10 +123,10 @@ main :: proc() {
 					rl.WHITE,
 				)
 			}
+			rl.EndMode2D()
 		}
-		// -----------------------
 
-		// DRAW UI
+		// UI
 		{
 			using game.ui
 
@@ -126,15 +147,29 @@ main :: proc() {
 			if entity_list.active >= 0 {
 				entity := game.world.entities[entity_list.active]
 				using entity.rect
+
+				rl.BeginMode2D(game.world.camera)
 				rl.DrawBoundingBox({{x, y, 0}, {x + width, y + height, 0}}, rl.RED)
+				rl.EndMode2D()
 			}
 		}
-		// -----------------------
-
 		rl.EndDrawing()
+
+		//----------------------------------------------------------------------------------
+
+		// CLEANUP
+		//----------------------------------------------------------------------------------
+
 		free_all(context.temp_allocator)
+
+		//----------------------------------------------------------------------------------
 	}
+
+	// DE-INITIALIZE
+	//----------------------------------------------------------------------------------
 
 	delete(game.world.entities)
 	rl.CloseWindow()
+
+	//----------------------------------------------------------------------------------
 }
