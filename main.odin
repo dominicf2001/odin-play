@@ -1,7 +1,6 @@
 package main
 
 import "core:fmt"
-import la "core:math/linalg"
 import "core:strings"
 import rl "vendor:raylib"
 
@@ -71,7 +70,7 @@ main :: proc() {
 			if rl.IsKeyDown(.S) do move.y = 1
 			if rl.IsKeyDown(.A) do move.x = -1
 			if rl.IsKeyDown(.D) do move.x = 1
-			move = la.normalize0(move) * rl.GetFrameTime() * PLAYER_SPEED
+			move = rl.Vector2Normalize(move) * rl.GetFrameTime() * PLAYER_SPEED
 
 			// x-axis
 			player.rect.x += move.x
