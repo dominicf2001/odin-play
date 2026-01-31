@@ -91,7 +91,7 @@ main :: proc() {
 			}
 
 			// point camera to player
-			game.world.camera.target = {
+			camera.target = {
 				player.rect.x + player.rect.width / 2,
 				player.rect.y + player.rect.height / 2,
 			}
