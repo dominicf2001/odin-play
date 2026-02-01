@@ -36,7 +36,6 @@ main :: proc() {
 
 	world := World {
 		camera = rl.Camera2D{offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, zoom = 1.0},
-		entities = {},
 	}
 
 	// player entity
