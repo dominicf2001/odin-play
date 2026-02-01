@@ -66,25 +66,26 @@ main :: proc() {
 			if rl.IsKeyDown(.D) do move.x = 1
 			move = rl.Vector2Normalize(move) * rl.GetFrameTime() * PLAYER_SPEED
 
-			// x-axis
-			player.rect.x += move.x
+			new_player_rect := player.rect
+			new_player_rect.x += move.x
+			new_player_rect.y += move.y
+
 			it := hm.iterator_make(&world.entities)
 			for e in hm.iterate(&it) {
-				if player != e && rl.CheckCollisionRecs(player.rect, e.rect) {
-					player.rect.x -= move.x
-					break
+				if player == e do continue
+
+				if move.x != 0 && rl.CheckCollisionRecs(new_player_rect, e.rect) {
+					new_player_rect.x -= move.x
+					move.x = 0
+				}
+
+				if move.y != 0 && rl.CheckCollisionRecs(new_player_rect, e.rect) {
+					new_player_rect.y -= move.y
+					move.y = 0
 				}
 			}
 
-			// y-axis
-			player.rect.y += move.y
-			it = hm.iterator_make(&world.entities)
-			for e in hm.iterate(&it) {
-				if player != e && rl.CheckCollisionRecs(player.rect, e.rect) {
-					player.rect.y -= move.y
-					break
-				}
-			}
+			player.rect = new_player_rect
 
 			// point camera to player
 			world.camera.target = {
