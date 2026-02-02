@@ -23,9 +23,13 @@ main :: proc() {
 
 	rl.InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Odin play!")
 
-	// load world
-	world := World {
-		camera = rl.Camera2D{offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, zoom = 1.0},
+	// initialize world
+	world := World{}
+
+	// camera
+	world.camera = rl.Camera2D {
+		offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2},
+		zoom   = 1.0,
 	}
 
 	// player entity
@@ -34,8 +38,8 @@ main :: proc() {
 		Entity {
 			"Player",
 			{
-				TILE_GRID_ORIGIN.x + ((TILE_GRID_SIZE * TILE_SIZE) / 4),
-				TILE_GRID_ORIGIN.y + ((TILE_GRID_SIZE * TILE_SIZE) / 4),
+				TILE_MAP_ORIGIN.x + ((TILE_GRID_SIZE * TILE_SIZE) / 4),
+				TILE_MAP_ORIGIN.y + ((TILE_GRID_SIZE * TILE_SIZE) / 4),
 				TILE_SIZE,
 				TILE_SIZE,
 			},
@@ -44,7 +48,9 @@ main :: proc() {
 		},
 	)
 
-	tile_grid_load(&world.t_grid)
+	// tile map
+	world.t_map = tile_map_make(20)
+	defer tile_map_destroy(&world.t_map)
 
 	//----------------------------------------------------------------------------------
 
@@ -55,46 +61,54 @@ main :: proc() {
 		if player, ok := hm.get(&world.entities, world.player_h); ok {
 			// calculate player movement
 			move := rl.Vector2{0, 0}
-			if rl.IsKeyPressed(.W) do move.y = -TILE_SIZE
-			if rl.IsKeyPressed(.S) do move.y = TILE_SIZE
-			if rl.IsKeyPressed(.A) do move.x = -TILE_SIZE
-			if rl.IsKeyPressed(.D) do move.x = TILE_SIZE
 
-			new_player_rect := player.rect
-			new_player_rect.x += move.x
-			new_player_rect.y += move.y
+			@(static) secs_since_press := f32(0)
+
+			if secs_since_press > 0.1 {
+				if rl.IsKeyDown(.W) do move.y = -TILE_SIZE
+				if rl.IsKeyDown(.S) do move.y = TILE_SIZE
+				if rl.IsKeyDown(.A) do move.x = -TILE_SIZE
+				if rl.IsKeyDown(.D) do move.x = TILE_SIZE
+
+				secs_since_press = 0
+			} else {
+				secs_since_press += rl.GetFrameTime()
+			}
+
+			new_player_rec := player.rec
+			new_player_rec.x += move.x
+			new_player_rec.y += move.y
 
 			// check entity collisions
 			it := hm.iterator_make(&world.entities)
 			for e in hm.iterate(&it) {
 				if player == e do continue
 
-				if move.x != 0 && rl.CheckCollisionRecs(new_player_rect, e.rect) {
-					new_player_rect.x -= move.x
+				if move.x != 0 && rl.CheckCollisionRecs(new_player_rec, e.rec) {
+					new_player_rec.x -= move.x
 					move.x = 0
 				}
 
-				if move.y != 0 && rl.CheckCollisionRecs(new_player_rect, e.rect) {
-					new_player_rect.y -= move.y
+				if move.y != 0 && rl.CheckCollisionRecs(new_player_rec, e.rec) {
+					new_player_rec.y -= move.y
 					move.y = 0
 				}
 			}
 
-			// check tile grid out of bounds
-			if new_player_rect.x < TILE_GRID_ORIGIN.x {
-				new_player_rect.x -= move.x
+			if new_player_rec.x < TILE_MAP_ORIGIN.x {
+				new_player_rec.x -= move.x
 			}
 
-			if new_player_rect.y < TILE_GRID_ORIGIN.y {
-				new_player_rect.y -= move.y
+			if new_player_rec.y < TILE_MAP_ORIGIN.y {
+				new_player_rec.y -= move.y
 			}
 
-			player.rect = new_player_rect
+			player.rec = new_player_rec
 
 			// point camera to player
 			world.camera.target = {
-				player.rect.x + player.rect.width / 2,
-				player.rect.y + player.rect.height / 2,
+				player.rec.x + player.rec.width / 2,
+				player.rec.y + player.rec.height / 2,
 			}
 		}
 
@@ -112,7 +126,7 @@ main :: proc() {
 			rl.BeginMode2D(world.camera)
 			// tiles
 
-			tile_grid_draw(&world.t_grid)
+			tile_map_draw(&world.t_map)
 
 			// entities
 			it := hm.iterator_make(&world.entities)
@@ -129,10 +143,7 @@ main :: proc() {
 			if e, ok := hm.get(&world.entities, selected_entity_h); ok {
 				rl.BeginMode2D(world.camera)
 				rl.DrawBoundingBox(
-					{
-						{e.rect.x, e.rect.y, 0},
-						{e.rect.x + e.rect.width, e.rect.y + e.rect.height, 0},
-					},
+					{{e.rec.x, e.rec.y, 0}, {e.rec.x + e.rec.width, e.rec.y + e.rec.height, 0}},
 					rl.RED,
 				)
 				rl.EndMode2D()
