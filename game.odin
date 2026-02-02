@@ -29,7 +29,7 @@ main :: proc() {
 	// camera
 	world.camera = rl.Camera2D {
 		offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2},
-		zoom   = 2.0,
+		zoom   = 1.0,
 	}
 
 	// player entity
@@ -39,8 +39,8 @@ main :: proc() {
 	)
 
 	// tile map
-	world.t_map = tile_map_make("tex/t_woods.png", 40)
-	defer tile_map_destroy(&world.t_map)
+	world.tilemap = tilemap_load("tex/t_woods.png", 40)
+	defer tilemap_unload(&world.tilemap)
 
 	//----------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ main :: proc() {
 
 				// check tilemap OOB
 				for _, axis in target_pos {
-					if !rl.CheckCollisionRecs(rec(target_pos), rec(&world.t_map)) {
+					if !rl.CheckCollisionRecs(rec(target_pos), rec(&world.tilemap)) {
 						target_pos[axis] = og_pos[axis]
 					}
 				}
@@ -86,7 +86,10 @@ main :: proc() {
 
 			// point camera to player
 			player_rec := rec(player)
-			world.camera.target = {player_rec.x + TILE_SIZE / 2, player_rec.y + TILE_SIZE / 2}
+			world.camera.target = {
+				player_rec.x + f32(TILE_SIZE) / 2,
+				player_rec.y + f32(TILE_SIZE) / 2,
+			}
 		}
 
 		//----------------------------------------------------------------------------------
@@ -103,7 +106,7 @@ main :: proc() {
 			rl.BeginMode2D(world.camera)
 
 			// tile map
-			draw(&world.t_map)
+			draw(&world.tilemap)
 
 			// entities
 			it := hm.iterator_make(&world.entities)
@@ -123,7 +126,10 @@ main :: proc() {
 
 				e_rec := rec(e)
 				rl.DrawBoundingBox(
-					{{e_rec.x, e_rec.y, 0}, {e_rec.x + TILE_SIZE, e_rec.y + TILE_SIZE, 0}},
+					{
+						{e_rec.x, e_rec.y, 0},
+						{e_rec.x + f32(TILE_SIZE), e_rec.y + f32(TILE_SIZE), 0},
+					},
 					rl.RED,
 				)
 
