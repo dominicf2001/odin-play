@@ -95,12 +95,15 @@ main :: proc() {
 				}
 			}
 
-			if new_player_rec.x < TILE_MAP_ORIGIN.x {
+			// check tilemap OOB
+			t_map_rec := tile_map_get_rec(&world.t_map)
+			if move.x != 0 && !rl.CheckCollisionRecs(new_player_rec, t_map_rec) {
 				new_player_rec.x -= move.x
+				move.x = 0
 			}
-
-			if new_player_rec.y < TILE_MAP_ORIGIN.y {
+			if move.y != 0 && !rl.CheckCollisionRecs(new_player_rec, t_map_rec) {
 				new_player_rec.y -= move.y
+				move.y = 0
 			}
 
 			player.rec = new_player_rec

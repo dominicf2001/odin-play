@@ -70,6 +70,12 @@ tile_map_draw :: proc(t_map: ^Tile_Map) {
 	}
 }
 
+tile_map_get_rec :: proc(t_map: ^Tile_Map) -> rl.Rectangle {
+	height := f32((t_map.size * TILE_SIZE) / 2)
+	width := height
+	return {TILE_MAP_ORIGIN.x, TILE_MAP_ORIGIN.y, width, height}
+}
+
 tile_draw :: proc(t: ^Tile) {
 	tile_rec := tile_get_rec(t)
 	rl.DrawRectangleRec(tile_rec, rl.BLUE)
@@ -77,7 +83,7 @@ tile_draw :: proc(t: ^Tile) {
 }
 
 tile_get_rec :: proc(tile: ^Tile) -> rl.Rectangle {
-	return rl.Rectangle {
+	return {
 		TILE_MAP_ORIGIN.x + f32(tile.pos.x * TILE_SIZE),
 		TILE_MAP_ORIGIN.y + f32(tile.pos.y * TILE_SIZE),
 		TILE_SIZE,
