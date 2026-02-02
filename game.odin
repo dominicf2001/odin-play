@@ -50,16 +50,16 @@ main :: proc() {
 		if player, ok := hm.get(&world.entities, world.player_h); ok {
 			// calculate player movement
 			move := rl.Vector2{0, 0}
-			if rl.IsKeyDown(.W) do move.y = -1
-			if rl.IsKeyDown(.S) do move.y = 1
-			if rl.IsKeyDown(.A) do move.x = -1
-			if rl.IsKeyDown(.D) do move.x = 1
-			move = rl.Vector2Normalize(move) * rl.GetFrameTime() * PLAYER_SPEED
+			if rl.IsKeyPressed(.W) do move.y = -TILE_SIZE
+			if rl.IsKeyPressed(.S) do move.y = TILE_SIZE
+			if rl.IsKeyPressed(.A) do move.x = -TILE_SIZE
+			if rl.IsKeyPressed(.D) do move.x = TILE_SIZE
 
 			new_player_rect := player.rect
 			new_player_rect.x += move.x
 			new_player_rect.y += move.y
 
+			// check entity collisions
 			it := hm.iterator_make(&world.entities)
 			for e in hm.iterate(&it) {
 				if player == e do continue
@@ -73,6 +73,15 @@ main :: proc() {
 					new_player_rect.y -= move.y
 					move.y = 0
 				}
+			}
+
+			// check tile grid out of bounds
+			if new_player_rect.x < TILE_GRID_ORIGIN.x {
+				new_player_rect.x -= move.x
+			}
+
+			if new_player_rect.y < TILE_GRID_ORIGIN.y {
+				new_player_rect.y -= move.y
 			}
 
 			player.rect = new_player_rect

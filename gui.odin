@@ -31,8 +31,6 @@ gui_entity_list :: proc(
 		}
 		num += 1
 	}
-	fmt.println(entities.used_len)
-	fmt.println(strings.to_string(entity_list_sb))
 	rl.GuiListView(
 		{0, 0, 74, 200},
 		strings.to_cstring(&entity_list_sb),
