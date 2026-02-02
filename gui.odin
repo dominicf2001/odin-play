@@ -9,14 +9,14 @@ GUI :: struct {
 	entity_list: struct {
 		active:       i32,
 		scroll_index: i32,
-		handles:      sa.Small_Array(MAX_ENTITIES, Entity_Handle),
+		handles:      sa.Small_Array(ENTITIES_MAX, Entity_Handle),
 	},
 }
 
 gui := GUI{}
 
 gui_entity_list :: proc(
-	entities: ^hm.Static_Handle_Map(MAX_ENTITIES, Entity, Entity_Handle),
+	entities: ^hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_Handle),
 ) -> Entity_Handle {
 	sa.clear(&gui.entity_list.handles)
 

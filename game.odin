@@ -1,22 +1,29 @@
 package game
 
 import hm "core:container/handle_map"
-import sa "core:container/small_array"
 import "core:fmt"
-import "core:strings"
 import rl "vendor:raylib"
 
 WINDOW_WIDTH :: 1280
 WINDOW_HEIGHT :: 720
 
-MAX_ENTITIES :: 1024
+TILE_SIZE :: 50.0
+TILES_NUM :: 40
+TILES_ORIGIN: [2]f32 : {WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
+
+ENTITIES_MAX :: 1024
 
 PLAYER_SPEED :: 500.0
 
 World :: struct {
 	camera:   rl.Camera2D,
 	player_h: Entity_Handle,
-	entities: hm.Static_Handle_Map(MAX_ENTITIES, Entity, Entity_Handle),
+	entities: hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_Handle),
+	tiles:    [TILES_NUM / 2][TILES_NUM / 2]Tile,
+}
+
+Tile :: struct {
+	color: rl.Color, // TODO: switch to tex
 }
 
 Entity :: struct {
@@ -63,13 +70,7 @@ main :: proc() {
 	// player entity
 	world.player_h = hm.add(
 		&world.entities,
-		Entity{"Player", {0, 0, 50, 50}, "tex/player.png", {}},
-	)
-
-	// non-player entities
-	obstacle_h := hm.add(
-		&world.entities,
-		Entity{"Obstacle", {250, 500, 500, 50}, "tex/obstacle.jpg", {}},
+		Entity{"Player", {TILES_ORIGIN.x, TILES_ORIGIN.y, 50, 50}, "tex/player.png", {}},
 	)
 
 	//----------------------------------------------------------------------------------
@@ -122,11 +123,26 @@ main :: proc() {
 		//----------------------------------------------------------------------------------
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.BLUE)
+		rl.ClearBackground(rl.BLACK)
 
 		// World
 		{
 			rl.BeginMode2D(world.camera)
+			// tiles
+
+			for tile_row, row_num in world.tiles {
+				for tile, col_num in tile_row {
+					tile_rect := rl.Rectangle {
+						TILES_ORIGIN.x + f32(row_num * TILE_SIZE),
+						TILES_ORIGIN.y + f32(col_num * TILE_SIZE),
+						TILE_SIZE,
+						TILE_SIZE,
+					}
+					rl.DrawRectangleRec(tile_rect, rl.BLUE)
+					rl.DrawRectangleLinesEx(tile_rect, 1, rl.WHITE)
+				}
+			}
+
 			// entities
 			it := hm.iterator_make(&world.entities)
 			for e in hm.iterate(&it) {
