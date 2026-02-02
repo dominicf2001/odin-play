@@ -35,7 +35,7 @@ main :: proc() {
 	// player entity
 	world.player_h = hm.add(
 		&world.entities,
-		Entity{name = "Player", t_pos = {0, 0}, tex_path = "tex/player.png"},
+		Entity{name = "Player", pos = {0, 0}, tex_path = "tex/player.png"},
 	)
 
 	// tile map
@@ -51,7 +51,7 @@ main :: proc() {
 		if player, ok := hm.get(&world.entities, world.player_h); ok {
 			is_movement_active := entity_movement_advance(player, rl.GetFrameTime())
 			if !is_movement_active {
-				og_pos := player.t_pos
+				og_pos := player.pos
 
 				// determine target pos
 				target_pos := og_pos
@@ -65,32 +65,18 @@ main :: proc() {
 				for e in hm.iterate(&it) {
 					if player == e do continue
 
-					target_w_pos := t_pos_to_w_pos(target_pos)
-					target_rec := rl.Rectangle {
-						target_w_pos.x,
-						target_w_pos.y,
-						TILE_SIZE,
-						TILE_SIZE,
-					}
-
-					if target_pos.x != og_pos.x && rl.CheckCollisionRecs(target_rec, rec(e)) {
-						target_pos.x = og_pos.x
-					}
-					if target_pos.y != og_pos.y && rl.CheckCollisionRecs(target_rec, rec(e)) {
-						target_pos.y = og_pos.y
+					for _, axis in target_pos {
+						if rl.CheckCollisionRecs(rec(target_pos), rec(e)) {
+							target_pos[axis] = og_pos[axis]
+						}
 					}
 				}
 
 				// check tilemap OOB
-				target_w_pos := t_pos_to_w_pos(target_pos)
-				target_rec := rl.Rectangle{target_w_pos.x, target_w_pos.y, TILE_SIZE, TILE_SIZE}
-				if target_pos.x != og_pos.x &&
-				   !rl.CheckCollisionRecs(target_rec, rec(&world.t_map)) {
-					target_pos.x = og_pos.x
-				}
-				if target_pos.y != og_pos.y &&
-				   !rl.CheckCollisionRecs(target_rec, rec(&world.t_map)) {
-					target_pos.y = og_pos.y
+				for _, axis in target_pos {
+					if !rl.CheckCollisionRecs(rec(target_pos), rec(&world.t_map)) {
+						target_pos[axis] = og_pos[axis]
+					}
 				}
 
 				if target_pos != og_pos {
@@ -99,8 +85,8 @@ main :: proc() {
 			}
 
 			// point camera to player
-			player_w_pos := w_pos(player)
-			world.camera.target = {player_w_pos.x + TILE_SIZE / 2, player_w_pos.y + TILE_SIZE / 2}
+			player_rec := rec(player)
+			world.camera.target = {player_rec.x + TILE_SIZE / 2, player_rec.y + TILE_SIZE / 2}
 		}
 
 		//----------------------------------------------------------------------------------
@@ -135,9 +121,9 @@ main :: proc() {
 			if e, ok := hm.get(&world.entities, selected_entity_h); ok {
 				rl.BeginMode2D(world.camera)
 
-				w_pos := w_pos(e)
+				e_rec := rec(e)
 				rl.DrawBoundingBox(
-					{{w_pos.x, w_pos.y, 0}, {w_pos.x + TILE_SIZE, w_pos.y + TILE_SIZE, 0}},
+					{{e_rec.x, e_rec.y, 0}, {e_rec.x + TILE_SIZE, e_rec.y + TILE_SIZE, 0}},
 					rl.RED,
 				)
 

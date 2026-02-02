@@ -29,6 +29,5 @@
 
 ## TODO
 
-- Make tile based movement
 - add zooming
 - Create/loading tile based maps

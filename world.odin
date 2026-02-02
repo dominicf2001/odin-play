@@ -5,7 +5,7 @@ import "core:fmt"
 import rl "vendor:raylib"
 
 TILE_MAP_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
-TILE_SIZE :: 40.0
+TILE_SIZE :: 30.0
 TILE_GRID_SIZE :: 20
 
 ENTITIES_MAX :: 1024
@@ -34,7 +34,7 @@ Tile_Pos :: [2]int
 
 Entity :: struct {
 	name:     string,
-	t_pos:    Tile_Pos,
+	pos:      Tile_Pos,
 	tex_path: cstring,
 	movement: Movement,
 	handle:   Entity_Handle,
@@ -95,20 +95,17 @@ tile_draw :: proc(t: ^Tile) {
 	rl.DrawRectangleLinesEx(tile_rec, 1, rl.WHITE)
 }
 
-tile_w_pos :: proc(t: ^Tile) -> World_Pos {
-	return t_pos_to_w_pos(t.pos)
+tile_rec :: proc(tile: ^Tile) -> rl.Rectangle {
+	return rec(tile.pos)
 }
 
-tile_rec :: proc(tile: ^Tile) -> rl.Rectangle {
-	w_pos := w_pos(tile)
+tile_pos_rec :: proc(pos: Tile_Pos) -> rl.Rectangle {
+	w_pos := tile_pos_to_world_pos(pos)
 	return {w_pos.x, w_pos.y, TILE_SIZE, TILE_SIZE}
 }
 
-t_pos_to_w_pos :: proc(t_pos: Tile_Pos) -> World_Pos {
-	return {
-		TILE_MAP_ORIGIN.x + f32(t_pos.x * TILE_SIZE),
-		TILE_MAP_ORIGIN.y + f32(t_pos.y * TILE_SIZE),
-	}
+tile_pos_to_world_pos :: proc(pos: Tile_Pos) -> World_Pos {
+	return {TILE_MAP_ORIGIN.x + f32(pos.x * TILE_SIZE), TILE_MAP_ORIGIN.y + f32(pos.y * TILE_SIZE)}
 }
 
 entity_draw :: proc(e: ^Entity) {
@@ -124,33 +121,30 @@ entity_draw :: proc(e: ^Entity) {
 }
 
 entity_rec :: proc(e: ^Entity) -> rl.Rectangle {
-	w_pos := w_pos(e)
-	return {w_pos.x, w_pos.y, TILE_SIZE, TILE_SIZE}
-}
-
-entity_w_pos :: proc(e: ^Entity) -> World_Pos {
-	t_pos_f := World_Pos{f32(e.t_pos.x), f32(e.t_pos.y)}
+	pos_f := World_Pos{f32(e.pos.x), f32(e.pos.y)}
 	if e.movement.active {
-		for _, axis in e.t_pos {
-			if e.t_pos[axis] < e.movement.to[axis] {
-				t_pos_f[axis] += e.movement.progress
+		for _, axis in e.pos {
+			if e.pos[axis] < e.movement.to[axis] {
+				pos_f[axis] += e.movement.progress
 			}
-			if e.t_pos[axis] > e.movement.to[axis] {
-				t_pos_f[axis] -= e.movement.progress
+			if e.pos[axis] > e.movement.to[axis] {
+				pos_f[axis] -= e.movement.progress
 			}
 		}
 	}
 
 	return {
-		TILE_MAP_ORIGIN.x + f32(t_pos_f.x * TILE_SIZE),
-		TILE_MAP_ORIGIN.y + f32(t_pos_f.y * TILE_SIZE),
+		TILE_MAP_ORIGIN.x + f32(pos_f.x * TILE_SIZE),
+		TILE_MAP_ORIGIN.y + f32(pos_f.y * TILE_SIZE),
+		TILE_SIZE,
+		TILE_SIZE,
 	}
 }
 
-entity_movement_start :: proc(e: ^Entity, to_t_pos: Tile_Pos, speed: f32 = 7) {
+entity_movement_start :: proc(e: ^Entity, target_pos: Tile_Pos, speed: f32 = 7) {
 	e.movement = {
 		active   = true,
-		to       = to_t_pos,
+		to       = target_pos,
 		speed    = speed,
 		progress = 0,
 	}
@@ -162,21 +156,17 @@ entity_movement_advance :: proc(e: ^Entity, frame_time: f32) -> bool {
 	}
 
 	if e.movement.progress >= 1 {
-		e.t_pos = e.movement.to
+		e.pos = e.movement.to
 		e.movement = {}
 	}
 
 	return e.movement.active
 }
 
-w_pos :: proc {
-	tile_w_pos,
-	entity_w_pos,
-}
-
 rec :: proc {
 	tile_map_rec,
 	tile_rec,
+	tile_pos_rec,
 	entity_rec,
 }
 
