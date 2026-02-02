@@ -29,7 +29,7 @@ main :: proc() {
 	// camera
 	world.camera = rl.Camera2D {
 		offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2},
-		zoom   = 1.0,
+		zoom   = 2.0,
 	}
 
 	// player entity
@@ -39,7 +39,7 @@ main :: proc() {
 	)
 
 	// tile map
-	world.t_map = tile_map_make(40)
+	world.t_map = tile_map_make("tex/t_woods.png", 40)
 	defer tile_map_destroy(&world.t_map)
 
 	//----------------------------------------------------------------------------------

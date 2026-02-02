@@ -29,5 +29,4 @@
 
 ## TODO
 
-- add zooming
 - Create/loading tile based maps

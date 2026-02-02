@@ -5,8 +5,7 @@ import "core:fmt"
 import rl "vendor:raylib"
 
 TILE_MAP_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
-TILE_SIZE :: 30.0
-TILE_GRID_SIZE :: 20
+TILE_SIZE :: 16.0
 
 ENTITIES_MAX :: 1024
 
@@ -27,7 +26,11 @@ Tile_Map :: struct {
 }
 
 Tile :: struct {
-	pos: Tile_Pos,
+	atlas: struct {
+		path: cstring,
+		id:   int,
+	},
+	pos:   Tile_Pos,
 }
 
 Tile_Pos :: [2]int
@@ -50,7 +53,7 @@ Movement :: struct {
 Entity_Handle :: distinct hm.Handle32
 
 // TODO: may eventually turn into tile_map_load
-tile_map_make :: proc(size: int) -> Tile_Map {
+tile_map_make :: proc(atlas_path: cstring, size: int) -> Tile_Map {
 	t_map := Tile_Map {
 		size = size,
 		rows = make([dynamic][dynamic]Tile, size / 2),
@@ -60,7 +63,8 @@ tile_map_make :: proc(size: int) -> Tile_Map {
 		t_row = make([dynamic]Tile, size / 2)
 		for &t, x in t_row {
 			t = {
-				pos = {x, y},
+				atlas = {atlas_path, 3},
+				pos   = {x, y},
 			}
 		}
 	}
@@ -89,10 +93,17 @@ tile_map_rec :: proc(t_map: ^Tile_Map) -> rl.Rectangle {
 	return {TILE_MAP_ORIGIN.x, TILE_MAP_ORIGIN.y, width, height}
 }
 
-tile_draw :: proc(t: ^Tile) {
-	tile_rec := rec(t)
-	rl.DrawRectangleRec(tile_rec, rl.BLUE)
-	rl.DrawRectangleLinesEx(tile_rec, 1, rl.WHITE)
+tile_draw :: proc(tile: ^Tile) {
+	atlas_tex := tex_load(tile.atlas.path)
+	rl.DrawTexturePro(
+		atlas_tex,
+		{TILE_SIZE * f32(tile.atlas.id), TILE_SIZE * f32(tile.atlas.id), TILE_SIZE, TILE_SIZE},
+		rec(tile),
+		{},
+		0,
+		rl.WHITE,
+	)
+	rl.DrawRectangleLinesEx(rec(tile), 0.5, rl.WHITE)
 }
 
 tile_rec :: proc(tile: ^Tile) -> rl.Rectangle {
