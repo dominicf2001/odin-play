@@ -22,10 +22,20 @@ World :: struct {
 Entity_Handle :: distinct hm.Handle32
 
 Entity :: struct {
-	name:   string,
-	rect:   rl.Rectangle,
-	tex:    rl.Texture2D,
-	handle: Entity_Handle,
+	name:     string,
+	rect:     rl.Rectangle,
+	tex_path: cstring,
+	handle:   Entity_Handle,
+}
+
+load_texture :: proc(tex_path: cstring) -> rl.Texture {
+	@(static) cache := map[cstring]rl.Texture{}
+
+	if ok := tex_path in cache; !ok {
+		cache[tex_path] = rl.LoadTexture(tex_path)
+	}
+
+	return cache[tex_path]
 }
 
 main :: proc() {
@@ -41,13 +51,13 @@ main :: proc() {
 	// player entity
 	world.player_handle = hm.add(
 		&world.entities,
-		Entity{"Player", {0, 0, 50, 50}, rl.LoadTexture("textures/player.png"), {}},
+		Entity{"Player", {0, 0, 50, 50}, "textures/player.png", {}},
 	)
 
 	// non-player entities
 	obstacle_handle := hm.add(
 		&world.entities,
-		Entity{"Obstacle", {250, 500, 500, 50}, rl.LoadTexture("textures/obstacle.jpg"), {}},
+		Entity{"Obstacle", {250, 500, 500, 50}, "textures/obstacle.jpg", {}},
 	)
 
 	//----------------------------------------------------------------------------------
@@ -108,9 +118,10 @@ main :: proc() {
 			// entities
 			it := hm.iterator_make(&world.entities)
 			for e in hm.iterate(&it) {
+				tex := load_texture(e.tex_path)
 				rl.DrawTexturePro(
-					e.tex,
-					{width = f32(e.tex.width), height = f32(e.tex.height)},
+					tex,
+					{width = f32(tex.width), height = f32(tex.height)},
 					e.rect,
 					{},
 					0,
