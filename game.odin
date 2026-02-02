@@ -33,7 +33,12 @@ main :: proc() {
 		&world.entities,
 		Entity {
 			"Player",
-			{TILE_GRID_ORIGIN.x, TILE_GRID_ORIGIN.y, TILE_SIZE, TILE_SIZE},
+			{
+				TILE_GRID_ORIGIN.x + ((TILE_GRID_SIZE * TILE_SIZE) / 4),
+				TILE_GRID_ORIGIN.y + ((TILE_GRID_SIZE * TILE_SIZE) / 4),
+				TILE_SIZE,
+				TILE_SIZE,
+			},
 			"tex/player.png",
 			{},
 		},

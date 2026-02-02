@@ -3,9 +3,9 @@ package game
 import hm "core:container/handle_map"
 import rl "vendor:raylib"
 
-TILE_GRID_SIZE :: 40
+TILE_GRID_SIZE :: 20
 TILE_GRID_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
-TILE_SIZE :: 40.0
+TILE_SIZE :: 25.0
 
 ENTITIES_MAX :: 1024
 
