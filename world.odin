@@ -1,6 +1,7 @@
 package game
 
 import hm "core:container/handle_map"
+import "core:fmt"
 import rl "vendor:raylib"
 
 TILE_MAP_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
@@ -18,26 +19,38 @@ World :: struct {
 	t_map:    Tile_Map,
 }
 
+World_Pos :: [2]f32
+
 Tile_Map :: struct {
-	size: uint,
+	size: int,
 	rows: [dynamic][dynamic]Tile,
 }
 
 Tile :: struct {
-	pos: [2]int,
+	pos: Tile_Pos,
 }
+
+Tile_Pos :: [2]int
 
 Entity :: struct {
 	name:     string,
-	rec:      rl.Rectangle,
+	t_pos:    Tile_Pos,
 	tex_path: cstring,
+	movement: Movement,
 	handle:   Entity_Handle,
+}
+
+Movement :: struct {
+	to:       Tile_Pos,
+	progress: f32, // [0..1]
+	speed:    f32,
+	active:   bool,
 }
 
 Entity_Handle :: distinct hm.Handle32
 
 // TODO: may eventually turn into tile_map_load
-tile_map_make :: proc(size: uint) -> Tile_Map {
+tile_map_make :: proc(size: int) -> Tile_Map {
 	t_map := Tile_Map {
 		size = size,
 		rows = make([dynamic][dynamic]Tile, size / 2),
@@ -65,30 +78,33 @@ tile_map_destroy :: proc(t_map: ^Tile_Map) {
 tile_map_draw :: proc(t_map: ^Tile_Map) {
 	for &t_row in t_map.rows {
 		for &tile in t_row {
-			tile_draw(&tile)
+			draw(&tile)
 		}
 	}
 }
 
-tile_map_get_rec :: proc(t_map: ^Tile_Map) -> rl.Rectangle {
+tile_map_rec :: proc(t_map: ^Tile_Map) -> rl.Rectangle {
 	height := f32((t_map.size * TILE_SIZE) / 2)
 	width := height
 	return {TILE_MAP_ORIGIN.x, TILE_MAP_ORIGIN.y, width, height}
 }
 
 tile_draw :: proc(t: ^Tile) {
-	tile_rec := tile_get_rec(t)
+	tile_rec := rec(t)
 	rl.DrawRectangleRec(tile_rec, rl.BLUE)
 	rl.DrawRectangleLinesEx(tile_rec, 1, rl.WHITE)
 }
 
-tile_get_rec :: proc(tile: ^Tile) -> rl.Rectangle {
+tile_w_pos :: proc(t: ^Tile) -> World_Pos {
 	return {
-		TILE_MAP_ORIGIN.x + f32(tile.pos.x * TILE_SIZE),
-		TILE_MAP_ORIGIN.y + f32(tile.pos.y * TILE_SIZE),
-		TILE_SIZE,
-		TILE_SIZE,
+		TILE_MAP_ORIGIN.x + f32(t.pos.x * TILE_SIZE),
+		TILE_MAP_ORIGIN.y + f32(t.pos.y * TILE_SIZE),
 	}
+}
+
+tile_rec :: proc(tile: ^Tile) -> rl.Rectangle {
+	w_pos := w_pos(tile)
+	return {w_pos.x, w_pos.y, TILE_SIZE, TILE_SIZE}
 }
 
 entity_draw :: proc(e: ^Entity) {
@@ -96,9 +112,72 @@ entity_draw :: proc(e: ^Entity) {
 	rl.DrawTexturePro(
 		tex,
 		{width = f32(tex.width), height = f32(tex.height)},
-		e.rec,
+		rec(e),
 		{},
 		0,
 		rl.WHITE,
 	)
+}
+
+entity_rec :: proc(e: ^Entity) -> rl.Rectangle {
+	w_pos := w_pos(e)
+	return {w_pos.x, w_pos.y, TILE_SIZE, TILE_SIZE}
+}
+
+entity_w_pos :: proc(e: ^Entity) -> World_Pos {
+	t_pos_f := World_Pos{f32(e.t_pos.x), f32(e.t_pos.y)}
+	if e.movement.active {
+		for _, axis in e.t_pos {
+			if e.t_pos[axis] < e.movement.to[axis] {
+				t_pos_f[axis] += e.movement.progress
+			}
+			if e.t_pos[axis] > e.movement.to[axis] {
+				t_pos_f[axis] -= e.movement.progress
+			}
+		}
+	}
+
+	return {
+		TILE_MAP_ORIGIN.x + f32(t_pos_f.x * TILE_SIZE),
+		TILE_MAP_ORIGIN.y + f32(t_pos_f.y * TILE_SIZE),
+	}
+}
+
+entity_movement_start :: proc(e: ^Entity, to_t_pos: Tile_Pos, speed: f32 = 7) {
+	e.movement = {
+		active   = true,
+		to       = to_t_pos,
+		speed    = speed,
+		progress = 0,
+	}
+}
+
+entity_movement_advance :: proc(e: ^Entity, frame_time: f32) -> bool {
+	if e.movement.active {
+		e.movement.progress += e.movement.speed * frame_time
+	}
+
+	if e.movement.progress >= 1 {
+		e.t_pos = e.movement.to
+		e.movement = {}
+	}
+
+	return e.movement.active
+}
+
+w_pos :: proc {
+	tile_w_pos,
+	entity_w_pos,
+}
+
+rec :: proc {
+	tile_map_rec,
+	tile_rec,
+	entity_rec,
+}
+
+draw :: proc {
+	tile_map_draw,
+	tile_draw,
+	entity_draw,
 }
