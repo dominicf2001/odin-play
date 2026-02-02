@@ -14,12 +14,10 @@ MAX_ENTITIES :: 1024
 PLAYER_SPEED :: 500.0
 
 World :: struct {
-	camera:        rl.Camera2D,
-	player_handle: Entity_Handle,
-	entities:      hm.Static_Handle_Map(MAX_ENTITIES, Entity, Entity_Handle),
+	camera:   rl.Camera2D,
+	player_h: Entity_Handle,
+	entities: hm.Static_Handle_Map(MAX_ENTITIES, Entity, Entity_Handle),
 }
-
-Entity_Handle :: distinct hm.Handle32
 
 Entity :: struct {
 	name:     string,
@@ -28,7 +26,21 @@ Entity :: struct {
 	handle:   Entity_Handle,
 }
 
-load_texture :: proc(tex_path: cstring) -> rl.Texture {
+Entity_Handle :: distinct hm.Handle32
+
+entity_draw :: proc(e: ^Entity) {
+	tex := tex_load(e.tex_path)
+	rl.DrawTexturePro(
+		tex,
+		{width = f32(tex.width), height = f32(tex.height)},
+		e.rect,
+		{},
+		0,
+		rl.WHITE,
+	)
+}
+
+tex_load :: proc(tex_path: cstring) -> rl.Texture {
 	@(static) cache := map[cstring]rl.Texture{}
 
 	if ok := tex_path in cache; !ok {
@@ -49,15 +61,15 @@ main :: proc() {
 	}
 
 	// player entity
-	world.player_handle = hm.add(
+	world.player_h = hm.add(
 		&world.entities,
-		Entity{"Player", {0, 0, 50, 50}, "textures/player.png", {}},
+		Entity{"Player", {0, 0, 50, 50}, "tex/player.png", {}},
 	)
 
 	// non-player entities
-	obstacle_handle := hm.add(
+	obstacle_h := hm.add(
 		&world.entities,
-		Entity{"Obstacle", {250, 500, 500, 50}, "textures/obstacle.jpg", {}},
+		Entity{"Obstacle", {250, 500, 500, 50}, "tex/obstacle.jpg", {}},
 	)
 
 	//----------------------------------------------------------------------------------
@@ -66,7 +78,7 @@ main :: proc() {
 		// UPDATE
 		//----------------------------------------------------------------------------------
 
-		if player, ok := hm.get(&world.entities, world.player_handle); ok {
+		if player, ok := hm.get(&world.entities, world.player_h); ok {
 			// calculate player movement
 			move := rl.Vector2{0, 0}
 			if rl.IsKeyDown(.W) do move.y = -1
@@ -113,28 +125,21 @@ main :: proc() {
 		rl.ClearBackground(rl.BLUE)
 
 		// World
-		rl.BeginMode2D(world.camera)
 		{
+			rl.BeginMode2D(world.camera)
 			// entities
 			it := hm.iterator_make(&world.entities)
 			for e in hm.iterate(&it) {
-				tex := load_texture(e.tex_path)
-				rl.DrawTexturePro(
-					tex,
-					{width = f32(tex.width), height = f32(tex.height)},
-					e.rect,
-					{},
-					0,
-					rl.WHITE,
-				)
+				entity_draw(e)
 			}
+			rl.EndMode2D()
 		}
-		rl.EndMode2D()
 
 		// UI
 		{
-			selected_entity_handle := gui_entity_list(&world.entities)
-			if e, ok := hm.get(&world.entities, selected_entity_handle); ok {
+			selected_entity_h := gui_entity_list(&world.entities)
+
+			if e, ok := hm.get(&world.entities, selected_entity_h); ok {
 				rl.BeginMode2D(world.camera)
 				rl.DrawBoundingBox(
 					{

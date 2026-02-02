@@ -29,6 +29,5 @@
 
 ## TODO
 
-- Improve texture loading
 - Make tile based movement
 - Create/loading tile based maps
