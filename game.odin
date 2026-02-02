@@ -39,7 +39,7 @@ main :: proc() {
 	)
 
 	// tile map
-	world.t_map = tile_map_make(20)
+	world.t_map = tile_map_make(40)
 	defer tile_map_destroy(&world.t_map)
 
 	//----------------------------------------------------------------------------------
@@ -51,46 +51,50 @@ main :: proc() {
 		if player, ok := hm.get(&world.entities, world.player_h); ok {
 			is_movement_active := entity_movement_advance(player, rl.GetFrameTime())
 			if !is_movement_active {
-				og_t_pos := player.t_pos
+				og_pos := player.t_pos
 
 				// determine target pos
-				to_t_pos := og_t_pos
-				if rl.IsKeyDown(.W) do to_t_pos.y -= 1
-				if rl.IsKeyDown(.S) do to_t_pos.y += 1
-				if rl.IsKeyDown(.A) do to_t_pos.x -= 1
-				if rl.IsKeyDown(.D) do to_t_pos.x += 1
-
-				target_t_rec := rec(&world.t_map.rows[to_t_pos.y][to_t_pos.x])
+				target_pos := og_pos
+				if rl.IsKeyDown(.W) do target_pos.y -= 1
+				if rl.IsKeyDown(.S) do target_pos.y += 1
+				if rl.IsKeyDown(.A) do target_pos.x -= 1
+				if rl.IsKeyDown(.D) do target_pos.x += 1
 
 				// check entity collisions
 				it := hm.iterator_make(&world.entities)
 				for e in hm.iterate(&it) {
 					if player == e do continue
 
-					if to_t_pos.x != og_t_pos.x && rl.CheckCollisionRecs(target_t_rec, rec(e)) {
-						target_t_rec.x = f32(og_t_pos.x)
-						to_t_pos.x = og_t_pos.x
+					target_w_pos := t_pos_to_w_pos(target_pos)
+					target_rec := rl.Rectangle {
+						target_w_pos.x,
+						target_w_pos.y,
+						TILE_SIZE,
+						TILE_SIZE,
 					}
-					if to_t_pos.y != og_t_pos.y && rl.CheckCollisionRecs(target_t_rec, rec(e)) {
-						target_t_rec.y = f32(og_t_pos.y)
-						to_t_pos.y = og_t_pos.y
+
+					if target_pos.x != og_pos.x && rl.CheckCollisionRecs(target_rec, rec(e)) {
+						target_pos.x = og_pos.x
+					}
+					if target_pos.y != og_pos.y && rl.CheckCollisionRecs(target_rec, rec(e)) {
+						target_pos.y = og_pos.y
 					}
 				}
 
 				// check tilemap OOB
-				if to_t_pos.x != og_t_pos.x &&
-				   !rl.CheckCollisionRecs(target_t_rec, rec(&world.t_map)) {
-					target_t_rec.x = f32(og_t_pos.x)
-					to_t_pos.x = og_t_pos.x
+				target_w_pos := t_pos_to_w_pos(target_pos)
+				target_rec := rl.Rectangle{target_w_pos.x, target_w_pos.y, TILE_SIZE, TILE_SIZE}
+				if target_pos.x != og_pos.x &&
+				   !rl.CheckCollisionRecs(target_rec, rec(&world.t_map)) {
+					target_pos.x = og_pos.x
 				}
-				if to_t_pos.y != og_t_pos.y &&
-				   !rl.CheckCollisionRecs(target_t_rec, rec(&world.t_map)) {
-					target_t_rec.y = f32(og_t_pos.y)
-					to_t_pos.y = og_t_pos.y
+				if target_pos.y != og_pos.y &&
+				   !rl.CheckCollisionRecs(target_rec, rec(&world.t_map)) {
+					target_pos.y = og_pos.y
 				}
 
-				if to_t_pos != og_t_pos {
-					entity_movement_start(player, to_t_pos)
+				if target_pos != og_pos {
+					entity_movement_start(player, target_pos)
 				}
 			}
 

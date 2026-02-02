@@ -5,7 +5,7 @@ import "core:fmt"
 import rl "vendor:raylib"
 
 TILE_MAP_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
-TILE_SIZE :: 25.0
+TILE_SIZE :: 40.0
 TILE_GRID_SIZE :: 20
 
 ENTITIES_MAX :: 1024
@@ -96,15 +96,19 @@ tile_draw :: proc(t: ^Tile) {
 }
 
 tile_w_pos :: proc(t: ^Tile) -> World_Pos {
-	return {
-		TILE_MAP_ORIGIN.x + f32(t.pos.x * TILE_SIZE),
-		TILE_MAP_ORIGIN.y + f32(t.pos.y * TILE_SIZE),
-	}
+	return t_pos_to_w_pos(t.pos)
 }
 
 tile_rec :: proc(tile: ^Tile) -> rl.Rectangle {
 	w_pos := w_pos(tile)
 	return {w_pos.x, w_pos.y, TILE_SIZE, TILE_SIZE}
+}
+
+t_pos_to_w_pos :: proc(t_pos: Tile_Pos) -> World_Pos {
+	return {
+		TILE_MAP_ORIGIN.x + f32(t_pos.x * TILE_SIZE),
+		TILE_MAP_ORIGIN.y + f32(t_pos.y * TILE_SIZE),
+	}
 }
 
 entity_draw :: proc(e: ^Entity) {
