@@ -8,8 +8,8 @@ WINDOW_WIDTH :: 1280
 WINDOW_HEIGHT :: 720
 
 TILE_SIZE :: 40.0
-TILES_NUM :: 40
-TILES_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
+TILE_GRID_SIZE :: 40
+TILE_GRID_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
 
 ENTITIES_MAX :: 1024
 
@@ -19,10 +19,14 @@ World :: struct {
 	camera:   rl.Camera2D,
 	player_h: Entity_Handle,
 	entities: hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_Handle),
-	tiles:    [TILES_NUM / 2][TILES_NUM / 2]Tile,
+	t_grid:   Tile_Grid,
 }
 
-Tile :: struct {}
+Tile_Grid :: [TILE_GRID_SIZE / 2][TILE_GRID_SIZE / 2]Tile
+
+Tile :: struct {
+	pos: [2]int,
+}
 
 Entity :: struct {
 	name:     string,
@@ -45,6 +49,37 @@ entity_draw :: proc(e: ^Entity) {
 	)
 }
 
+// TODO: would eventually probably load from a file
+tile_grid_load :: proc(t_grid: ^Tile_Grid) {
+	for &t_row, y in t_grid {
+		for &t, x in t_row {
+			t.pos.x = x
+			t.pos.y = y
+
+			// TODO: load texture
+		}
+	}
+}
+
+tile_grid_draw :: proc(t_grid: ^Tile_Grid) {
+	for &tile_row in t_grid {
+		for &tile in tile_row {
+			tile_draw(&tile)
+		}
+	}
+}
+
+tile_draw :: proc(t: ^Tile) {
+	tile_rect := rl.Rectangle {
+		TILE_GRID_ORIGIN.x + f32(t.pos.x * TILE_SIZE),
+		TILE_GRID_ORIGIN.y + f32(t.pos.y * TILE_SIZE),
+		TILE_SIZE,
+		TILE_SIZE,
+	}
+	rl.DrawRectangleRec(tile_rect, rl.BLUE)
+	rl.DrawRectangleLinesEx(tile_rect, 1, rl.WHITE)
+}
+
 tex_load :: proc(tex_path: cstring) -> rl.Texture {
 	@(static) cache := map[cstring]rl.Texture{}
 
@@ -61,6 +96,7 @@ main :: proc() {
 
 	rl.InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Odin play!")
 
+	// load world
 	world := World {
 		camera = rl.Camera2D{offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, zoom = 1.0},
 	}
@@ -70,11 +106,13 @@ main :: proc() {
 		&world.entities,
 		Entity {
 			"Player",
-			{TILES_ORIGIN.x, TILES_ORIGIN.y, TILE_SIZE, TILE_SIZE},
+			{TILE_GRID_ORIGIN.x, TILE_GRID_ORIGIN.y, TILE_SIZE, TILE_SIZE},
 			"tex/player.png",
 			{},
 		},
 	)
+
+	tile_grid_load(&world.t_grid)
 
 	//----------------------------------------------------------------------------------
 
@@ -133,18 +171,7 @@ main :: proc() {
 			rl.BeginMode2D(world.camera)
 			// tiles
 
-			for tile_row, row_num in world.tiles {
-				for tile, col_num in tile_row {
-					tile_rect := rl.Rectangle {
-						TILES_ORIGIN.x + f32(row_num * TILE_SIZE),
-						TILES_ORIGIN.y + f32(col_num * TILE_SIZE),
-						TILE_SIZE,
-						TILE_SIZE,
-					}
-					rl.DrawRectangleRec(tile_rect, rl.BLUE)
-					rl.DrawRectangleLinesEx(tile_rect, 1, rl.WHITE)
-				}
-			}
+			tile_grid_draw(&world.t_grid)
 
 			// entities
 			it := hm.iterator_make(&world.entities)
