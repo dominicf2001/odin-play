@@ -29,7 +29,7 @@ main :: proc() {
 	// camera
 	world.camera = rl.Camera2D {
 		offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2},
-		zoom   = 1.0,
+		zoom   = 2.0,
 	}
 
 	// player entity
@@ -39,7 +39,7 @@ main :: proc() {
 	)
 
 	// tile map
-	world.tilemap = tilemap_load("tex/t_woods.png", 40)
+	world.tilemap = tilemap_load("tex/t_woods.png", {10, 30})
 	defer tilemap_unload(&world.tilemap)
 
 	//----------------------------------------------------------------------------------
@@ -107,6 +107,7 @@ main :: proc() {
 
 			// tile map
 			draw(&world.tilemap)
+			// draw(&world.tilemap.tileset)
 
 			// entities
 			it := hm.iterator_make(&world.entities)

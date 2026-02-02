@@ -20,7 +20,7 @@ World :: struct {
 World_Pos :: [2]f32
 
 Tilemap :: struct {
-	size:       u16,
+	dim:        [2]u16,
 	tileset:    Tileset,
 	placements: [dynamic][dynamic]Tile_Placement,
 }
@@ -57,36 +57,29 @@ Movement :: struct {
 
 Entity_Handle :: distinct hm.Handle32
 
-tilemap_load :: proc(atlas_path: cstring, tilemap_area: u16) -> Tilemap {
-	assert(tilemap_area % 2 == 0)
-
+tilemap_load :: proc(atlas_path: cstring, tilemap_dim: [2]u16) -> Tilemap {
 	tileset_tex := tex_load(atlas_path)
 	tilemap := Tilemap {
-		size = tilemap_area,
-		placements = make([dynamic][dynamic]Tile_Placement, tilemap_area / 2),
+		dim = tilemap_dim,
+		placements = make([dynamic][dynamic]Tile_Placement, tilemap_dim.y),
 		tileset = {
 			tex = tileset_tex,
 			tiles = make(
 				[dynamic]Tile,
-				(tileset_tex.height * tileset_tex.width) / i32(TILE_SIZE * TILE_SIZE),
+				(tileset_tex.height / i32(TILE_SIZE)) * (tileset_tex.width / i32(TILE_SIZE)),
 			),
 		},
 	}
 
-	row, col: i32 = 0, 0
 	tileset_width := tileset_tex.width / i32(TILE_SIZE)
-	for &tile in tilemap.tileset.tiles {
-		tile.tileset_origin = {f32(col) * f32(TILE_SIZE), f32(row) * f32(TILE_SIZE)}
-		if col == (tileset_width - 1) {
-			row += 1
-			col = 0
-		} else {
-			col += 1
-		}
+	for &tile, i in tilemap.tileset.tiles {
+		x := i32(i) % tileset_width
+		y := i32(i) / tileset_width
+		tile.tileset_origin = {f32(x) * f32(TILE_SIZE), f32(y) * f32(TILE_SIZE)}
 	}
 
 	for &row, y in tilemap.placements {
-		row = make([dynamic]Tile_Placement, tilemap_area / 2)
+		row = make([dynamic]Tile_Placement, tilemap_dim.x)
 	}
 
 	return tilemap
@@ -106,30 +99,48 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 			tile_index := tile_placement.tile_index
 			if tile_index < 0 || int(tile_index) >= len(tilemap.tileset.tiles) do continue
 
-			// fmt.println(len(tilemap.tileset.tiles))
-			// tile := tilemap.tileset.tiles[16]
-			// rl.DrawTexturePro(
-			// 	tilemap.tileset.tex,
-			// 	{
-			// 		f32(TILE_SIZE) * tile.tileset_origin.x,
-			// 		f32(TILE_SIZE) * tile.tileset_origin.y,
-			// 		f32(TILE_SIZE),
-			// 		f32(TILE_SIZE),
-			// 	},
-			// 	rec(Tile_Pos{u16(x), u16(y)}),
-			// 	{},
-			// 	0,
-			// 	rl.WHITE,
-			// )
-			rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(y), u16(x)}), 0.5, rl.WHITE)
+			tile := tilemap.tileset.tiles[tile_index]
+			rl.DrawTexturePro(
+				tilemap.tileset.tex,
+				{
+					f32(TILE_SIZE) * tile.tileset_origin.x,
+					f32(TILE_SIZE) * tile.tileset_origin.y,
+					f32(TILE_SIZE),
+					f32(TILE_SIZE),
+				},
+				rec(Tile_Pos{u16(x), u16(y)}),
+				{},
+				0,
+				rl.WHITE,
+			)
+			rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(x), u16(y)}), 0.5, rl.WHITE)
 		}
 	}
 }
 
+tileset_draw :: proc(tileset: ^Tileset) {
+	tileset_width := tileset.tex.width / i32(TILE_SIZE)
+	for &tile, i in tileset.tiles {
+		x := i32(i) % tileset_width
+		y := i32(i) / tileset_width
+		rl.DrawTexturePro(
+			tileset.tex,
+			{tile.tileset_origin.x, tile.tileset_origin.y, f32(TILE_SIZE), f32(TILE_SIZE)},
+			rec(Tile_Pos{u16(x), u16(y)}),
+			{},
+			0,
+			rl.WHITE,
+		)
+	}
+}
+
 tilemap_rec :: proc(tilemap: ^Tilemap) -> rl.Rectangle {
-	height := f32(tilemap.size) * f32(TILE_SIZE) / 2
-	width := height
-	return {TILE_MAP_ORIGIN.x, TILE_MAP_ORIGIN.y, width, height}
+	return {
+		TILE_MAP_ORIGIN.x,
+		TILE_MAP_ORIGIN.y,
+		f32(tilemap.dim.x) * f32(TILE_SIZE),
+		f32(tilemap.dim.y) * f32(TILE_SIZE),
+	}
 }
 
 tile_rec :: proc(pos: Tile_Pos) -> rl.Rectangle {
@@ -207,5 +218,6 @@ rec :: proc {
 
 draw :: proc {
 	tilemap_draw,
+	tileset_draw,
 	entity_draw,
 }
