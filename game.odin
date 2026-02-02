@@ -7,9 +7,9 @@ import rl "vendor:raylib"
 WINDOW_WIDTH :: 1280
 WINDOW_HEIGHT :: 720
 
-TILE_SIZE :: 50.0
+TILE_SIZE :: 40.0
 TILES_NUM :: 40
-TILES_ORIGIN: [2]f32 : {WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
+TILES_ORIGIN :: [2]f32{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
 
 ENTITIES_MAX :: 1024
 
@@ -22,9 +22,7 @@ World :: struct {
 	tiles:    [TILES_NUM / 2][TILES_NUM / 2]Tile,
 }
 
-Tile :: struct {
-	color: rl.Color, // TODO: switch to tex
-}
+Tile :: struct {}
 
 Entity :: struct {
 	name:     string,
@@ -70,7 +68,12 @@ main :: proc() {
 	// player entity
 	world.player_h = hm.add(
 		&world.entities,
-		Entity{"Player", {TILES_ORIGIN.x, TILES_ORIGIN.y, 50, 50}, "tex/player.png", {}},
+		Entity {
+			"Player",
+			{TILES_ORIGIN.x, TILES_ORIGIN.y, TILE_SIZE, TILE_SIZE},
+			"tex/player.png",
+			{},
+		},
 	)
 
 	//----------------------------------------------------------------------------------
