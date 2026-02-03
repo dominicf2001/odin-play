@@ -98,6 +98,9 @@ tilemap_unload :: proc(tilemap: ^Tilemap) {
 }
 
 tilemap_draw :: proc(tilemap: ^Tilemap) {
+	// background
+	rl.DrawRectangleRec(t_rec(tilemap), rl.WHITE)
+
 	// tile placements
 	for &row, y in tilemap.placements {
 		for &tile_placement, x in row {
@@ -113,7 +116,7 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 				0,
 				rl.WHITE,
 			)
-			rl.DrawRectangleLinesEx(t_rec(Tilemap_Pos{u16(x), u16(y)}), 0.5, rl.WHITE)
+			rl.DrawRectangleLinesEx(t_rec(Tilemap_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
 		}
 	}
 

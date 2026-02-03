@@ -149,7 +149,7 @@ main :: proc() {
 					tile_placement := &w.tilemap.placements[pos.y][pos.x]
 
 					if rl.CheckCollisionPointRec(mouse_w_pos, t_rec(pos)) {
-						rl.DrawRectangleRec(t_rec(pos), {255, 255, 255, 50})
+						rl.DrawRectangleRec(t_rec(pos), {0, 0, 0, 50})
 					}
 
 					if rl.IsMouseButtonDown(.LEFT) {
