@@ -49,10 +49,10 @@ Entity_Handle_Map :: distinct hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_
 Entity_Handle :: distinct hm.Handle32
 
 Movement :: struct {
-	to:       Tile_Pos,
-	progress: f32, // 0..<=1
-	speed:    f32, // by pixels
-	active:   bool,
+	target_pos: Tile_Pos,
+	progress:   f32, // 0..<=1
+	speed:      f32, // tiles per sec
+	active:     bool,
 }
 
 tilemap_load :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
@@ -176,10 +176,10 @@ entity_rec :: proc(e: ^Entity) -> rl.Rectangle {
 	pos_f := [2]f32{f32(e.pos.x), f32(e.pos.y)}
 	if e.movement.active {
 		for _, axis in e.pos {
-			if e.pos[axis] < e.movement.to[axis] {
+			if e.pos[axis] < e.movement.target_pos[axis] {
 				pos_f[axis] += f32(e.movement.progress)
 			}
-			if e.pos[axis] > e.movement.to[axis] {
+			if e.pos[axis] > e.movement.target_pos[axis] {
 				pos_f[axis] -= f32(e.movement.progress)
 			}
 		}
@@ -195,10 +195,10 @@ entity_rec :: proc(e: ^Entity) -> rl.Rectangle {
 
 entity_movement_start :: proc(e: ^Entity, target_pos: Tile_Pos, speed: f32 = 7) {
 	e.movement = {
-		active   = true,
-		to       = target_pos,
-		speed    = speed,
-		progress = 0,
+		active     = true,
+		target_pos = target_pos,
+		speed      = speed,
+		progress   = 0,
 	}
 }
 
@@ -208,7 +208,7 @@ entity_movement_advance :: proc(e: ^Entity, frame_time: f32) -> bool {
 	}
 
 	if e.movement.progress >= 1 {
-		e.pos = e.movement.to
+		e.pos = e.movement.target_pos
 		e.movement = {}
 	}
 
