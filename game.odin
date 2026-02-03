@@ -4,16 +4,13 @@ import hm "core:container/handle_map"
 import "core:fmt"
 import rl "vendor:raylib"
 
-WINDOW_WIDTH :: 1920
-WINDOW_HEIGHT :: 1080
-
 World :: struct {
 	camera:  rl.Camera2D,
 	tilemap: Tilemap,
 }
 
-World_Pos :: [2]f32
 Screen_Pos :: [2]f32
+World_Pos :: [2]f32
 
 tex_load :: proc(tex_path: cstring) -> rl.Texture {
 	@(static) cache := map[cstring]rl.Texture{}
@@ -29,15 +26,15 @@ main :: proc() {
 	// INITIALIZE
 	//----------------------------------------------------------------------------------
 
-	rl.InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Odin play!")
+	rl.InitWindow(1280, 720, "Odin play!")
 
 	// initialize world
 	w := World{}
 
 	// camera
 	w.camera = rl.Camera2D {
-		offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2},
-		zoom   = 2.0,
+		offset = {f32(rl.GetScreenWidth()) / 2, f32(rl.GetScreenHeight()) / 2},
+		zoom   = 1.0,
 	}
 
 	// tile map
@@ -74,7 +71,7 @@ main :: proc() {
 					if player == e do continue
 
 					for _, axis in target_pos {
-						if rl.CheckCollisionRecs(t_rec(target_pos), t_rec(e)) {
+						if rl.CheckCollisionRecs(rec(target_pos), rec(e)) {
 							target_pos[axis] = og_pos[axis]
 						}
 					}
@@ -82,7 +79,7 @@ main :: proc() {
 
 				// check tilemap OOB
 				for _, axis in target_pos {
-					if !rl.CheckCollisionRecs(t_rec(target_pos), t_rec(&w.tilemap)) {
+					if !rl.CheckCollisionRecs(rec(target_pos), rec(&w.tilemap)) {
 						target_pos[axis] = og_pos[axis]
 					}
 				}
@@ -92,11 +89,11 @@ main :: proc() {
 				}
 			}
 
-			// point camera to player
-			player_rec := t_rec(player)
+			// // point camera to player
+			player_rec := rec(player)
 			w.camera.target = {
-				player_rec.x + f32(TILE_SIZE) / 2,
-				player_rec.y + f32(TILE_SIZE) / 2,
+				player_rec.x + player_rec.width / 2,
+				player_rec.y + player_rec.height / 2,
 			}
 		}
 
@@ -125,12 +122,9 @@ main :: proc() {
 			if e, ok := hm.get(&w.tilemap.entities, selected_entity_h); ok {
 				rl.BeginMode2D(w.camera)
 
-				e_rec := t_rec(e)
+				e_rec := rec(e)
 				rl.DrawBoundingBox(
-					{
-						{e_rec.x, e_rec.y, 0},
-						{e_rec.x + f32(TILE_SIZE), e_rec.y + f32(TILE_SIZE), 0},
-					},
+					{{e_rec.x, e_rec.y, 0}, {e_rec.x + e_rec.width, e_rec.y + e_rec.height, 0}},
 					rl.RED,
 				)
 
@@ -139,17 +133,17 @@ main :: proc() {
 
 			// tileset pallete
 			selected_tile_h := gui_tileset_pallete(
-				{0, WINDOW_HEIGHT - f32(w.tilemap.tileset.tex.height)},
+				{0, f32(rl.GetScreenHeight()) - f32(w.tilemap.tileset.tex.height)},
 				&w.tilemap.tileset,
 			)
 			if selected_tile_h != -1 {
 				rl.BeginMode2D(w.camera)
-				mouse_w_pos: World_Pos = rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
-				if pos, ok := world_pos_to_tilemap_pos(&w.tilemap, mouse_w_pos); ok {
+				mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
+				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
 					tile_placement := &w.tilemap.placements[pos.y][pos.x]
 
-					if rl.CheckCollisionPointRec(mouse_w_pos, t_rec(pos)) {
-						rl.DrawRectangleRec(t_rec(pos), {0, 0, 0, 50})
+					if rl.CheckCollisionPointRec(mouse_w_pos, rec(pos)) {
+						rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
 					}
 
 					if rl.IsMouseButtonDown(.LEFT) {

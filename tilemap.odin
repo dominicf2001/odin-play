@@ -4,7 +4,7 @@ import hm "core:container/handle_map"
 import "core:fmt"
 import rl "vendor:raylib"
 
-TILE_MAP_ORIGIN :: World_Pos{WINDOW_WIDTH / 4, WINDOW_WIDTH / 4}
+TILEMAP_W_POS :: World_Pos{0, 0}
 TILE_SIZE :: u16(16)
 ENTITIES_MAX :: 1024
 
@@ -17,19 +17,17 @@ Tilemap :: struct {
 	entities:   Entity_Handle_Map,
 }
 
-Tilemap_Dim :: distinct [2]u16 // by # of tiles
+Tilemap_Dim :: distinct [2]u16 // by tiles
 
-Tilemap_Pos :: distinct [2]u16
+Tile_Pos :: distinct [2]u16
 
 Tileset :: struct {
 	tex:   rl.Texture,
 	tiles: [dynamic]Tile,
 }
 
-Tileset_Pos :: distinct [2]f32
-
 Tile :: struct {
-	tileset_pos: Tileset_Pos,
+	tileset_pos: [2]f32,
 }
 
 Tile_Placement :: struct {
@@ -40,20 +38,20 @@ Tile_Handle :: distinct u16
 
 Entity :: struct {
 	name:     string,
-	pos:      Tilemap_Pos,
+	pos:      Tile_Pos,
 	tex_path: cstring,
 	movement: Movement,
 	handle:   Entity_Handle,
 }
 
-Entity_Handle_Map :: hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_Handle)
+Entity_Handle_Map :: distinct hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_Handle)
 
 Entity_Handle :: distinct hm.Handle32
 
 Movement :: struct {
-	to:       Tilemap_Pos,
-	progress: f32, // [0..1]
-	speed:    f32,
+	to:       Tile_Pos,
+	progress: f32, // 0..<=1
+	speed:    f32, // by pixels
 	active:   bool,
 }
 
@@ -99,7 +97,7 @@ tilemap_unload :: proc(tilemap: ^Tilemap) {
 
 tilemap_draw :: proc(tilemap: ^Tilemap) {
 	// background
-	rl.DrawRectangleRec(t_rec(tilemap), rl.WHITE)
+	rl.DrawRectangleRec(rec(tilemap), rl.WHITE)
 
 	// tile placements
 	for &row, y in tilemap.placements {
@@ -111,12 +109,12 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 			rl.DrawTexturePro(
 				tilemap.tileset.tex,
 				{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},
-				t_rec(Tilemap_Pos{u16(x), u16(y)}),
+				rec(Tile_Pos{u16(x), u16(y)}),
 				{},
 				0,
 				rl.WHITE,
 			)
-			rl.DrawRectangleLinesEx(t_rec(Tilemap_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
+			rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
 		}
 	}
 
@@ -129,34 +127,34 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 
 tilemap_rec :: proc(tilemap: ^Tilemap) -> rl.Rectangle {
 	return {
-		TILE_MAP_ORIGIN.x,
-		TILE_MAP_ORIGIN.y,
+		TILEMAP_W_POS.x,
+		TILEMAP_W_POS.y,
 		f32(tilemap.dim.x) * f32(TILE_SIZE),
 		f32(tilemap.dim.y) * f32(TILE_SIZE),
 	}
 }
 
-tile_rec :: proc(pos: Tilemap_Pos) -> rl.Rectangle {
-	w_pos := tilemap_pos_to_world_pos(pos)
+tile_rec :: proc(pos: Tile_Pos) -> rl.Rectangle {
+	w_pos := tile_pos_to_world(pos)
 	return {w_pos.x, w_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)}
 }
 
-tilemap_pos_to_world_pos :: proc(pos: Tilemap_Pos) -> World_Pos {
+tile_pos_to_world :: proc(pos: Tile_Pos) -> World_Pos {
 	return {
-		TILE_MAP_ORIGIN.x + f32(pos.x) * f32(TILE_SIZE),
-		TILE_MAP_ORIGIN.y + f32(pos.y) * f32(TILE_SIZE),
+		TILEMAP_W_POS.x + f32(pos.x) * f32(TILE_SIZE),
+		TILEMAP_W_POS.y + f32(pos.y) * f32(TILE_SIZE),
 	}
 }
 
-world_pos_to_tilemap_pos :: proc(tilemap: ^Tilemap, w_pos: World_Pos) -> (Tilemap_Pos, bool) {
-	if !rl.CheckCollisionPointRec(w_pos, t_rec(tilemap)) {
+world_pos_to_tile :: proc(tilemap: ^Tilemap, w_pos: World_Pos) -> (Tile_Pos, bool) {
+	if !rl.CheckCollisionPointRec(w_pos, rec(tilemap)) {
 		// out of bounds
 		return {}, false
 	}
 
-	pos_f := World_Pos {
-		(w_pos.x - TILE_MAP_ORIGIN.x) / f32(TILE_SIZE),
-		(w_pos.y - TILE_MAP_ORIGIN.y) / f32(TILE_SIZE),
+	pos_f := [2]f32 {
+		(w_pos.x - TILEMAP_W_POS.x) / f32(TILE_SIZE),
+		(w_pos.y - TILEMAP_W_POS.y) / f32(TILE_SIZE),
 	}
 
 	return {u16(pos_f.x), u16(pos_f.y)}, true
@@ -167,7 +165,7 @@ entity_draw :: proc(e: ^Entity) {
 	rl.DrawTexturePro(
 		tex,
 		{width = f32(tex.width), height = f32(tex.height)},
-		t_rec(e),
+		rec(e),
 		{},
 		0,
 		rl.WHITE,
@@ -175,7 +173,7 @@ entity_draw :: proc(e: ^Entity) {
 }
 
 entity_rec :: proc(e: ^Entity) -> rl.Rectangle {
-	pos_f := World_Pos{f32(e.pos.x), f32(e.pos.y)}
+	pos_f := [2]f32{f32(e.pos.x), f32(e.pos.y)}
 	if e.movement.active {
 		for _, axis in e.pos {
 			if e.pos[axis] < e.movement.to[axis] {
@@ -188,14 +186,14 @@ entity_rec :: proc(e: ^Entity) -> rl.Rectangle {
 	}
 
 	return {
-		TILE_MAP_ORIGIN.x + pos_f.x * f32(TILE_SIZE),
-		TILE_MAP_ORIGIN.y + pos_f.y * f32(TILE_SIZE),
+		TILEMAP_W_POS.x + pos_f.x * f32(TILE_SIZE),
+		TILEMAP_W_POS.y + pos_f.y * f32(TILE_SIZE),
 		f32(TILE_SIZE),
 		f32(TILE_SIZE),
 	}
 }
 
-entity_movement_start :: proc(e: ^Entity, target_pos: Tilemap_Pos, speed: f32 = 7) {
+entity_movement_start :: proc(e: ^Entity, target_pos: Tile_Pos, speed: f32 = 7) {
 	e.movement = {
 		active   = true,
 		to       = target_pos,
@@ -217,7 +215,7 @@ entity_movement_advance :: proc(e: ^Entity, frame_time: f32) -> bool {
 	return e.movement.active
 }
 
-t_rec :: proc {
+rec :: proc {
 	tilemap_rec,
 	tile_rec,
 	entity_rec,
