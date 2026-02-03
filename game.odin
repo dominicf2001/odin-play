@@ -13,6 +13,7 @@ World :: struct {
 }
 
 World_Pos :: [2]f32
+Screen_Pos :: [2]f32
 
 tex_load :: proc(tex_path: cstring) -> rl.Texture {
 	@(static) cache := map[cstring]rl.Texture{}
@@ -137,10 +138,26 @@ main :: proc() {
 			}
 
 			// tileset pallete
-			gui_tileset_pallete(
+			selected_tile_h := gui_tileset_pallete(
 				{0, WINDOW_HEIGHT - f32(w.tilemap.tileset.tex.height)},
 				&w.tilemap.tileset,
 			)
+			if selected_tile_h != -1 {
+				rl.BeginMode2D(w.camera)
+				mouse_w_pos: World_Pos = rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
+				if pos, ok := world_pos_to_tilemap_pos(&w.tilemap, mouse_w_pos); ok {
+					tile_placement := &w.tilemap.placements[pos.y][pos.x]
+
+					if rl.CheckCollisionPointRec(mouse_w_pos, t_rec(pos)) {
+						rl.DrawRectangleRec(t_rec(pos), {255, 255, 255, 50})
+					}
+
+					if rl.IsMouseButtonDown(.LEFT) {
+						tile_placement.tile_h = Tile_Handle(selected_tile_h)
+					}
+				}
+				rl.EndMode2D()
+			}
 		}
 
 		rl.EndDrawing()

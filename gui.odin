@@ -49,22 +49,22 @@ gui_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> E
 	return {}
 }
 
-gui_tileset_pallete :: proc(pos: World_Pos, tileset: ^Tileset) {
+gui_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset) -> i32 {
 	rl.DrawRectangleRec(
-		rl.Rectangle{pos.x, pos.y, f32(tileset.tex.width), f32(tileset.tex.height)},
+		rl.Rectangle{s_pos.x, s_pos.y, f32(tileset.tex.width), f32(tileset.tex.height)},
 		rl.WHITE,
 	)
 
-	tileset_width := tileset.tex.width / i32(TILE_SIZE)
 	for &tile, i in tileset.tiles {
 		tile_h := Tile_Handle(i)
 
+		tileset_width := tileset.tex.width / i32(TILE_SIZE)
 		col := i32(tile_h) % tileset_width
 		row := i32(tile_h) / tileset_width
 
 		tile_bounds := rl.Rectangle {
-			pos.x + f32(col * i32(TILE_SIZE)),
-			pos.y + f32(row * i32(TILE_SIZE)),
+			s_pos.x + f32(col * i32(TILE_SIZE)),
+			s_pos.y + f32(row * i32(TILE_SIZE)),
 			f32(TILE_SIZE),
 			f32(TILE_SIZE),
 		}
@@ -94,4 +94,6 @@ gui_tileset_pallete :: proc(pos: World_Pos, tileset: ^Tileset) {
 			}
 		}
 	}
+
+	return gui.tileset_pallete.active_tile_h
 }
