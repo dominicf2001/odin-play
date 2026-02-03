@@ -27,8 +27,10 @@ Tile :: struct {
 }
 
 Tile_Placement :: struct {
-	tile_index: u16,
+	tile_h: Tile_Handle,
 }
+
+Tile_Handle :: distinct u16
 
 Tile_Pos :: [2]u16
 
@@ -51,24 +53,28 @@ Movement :: struct {
 	active:   bool,
 }
 
-tilemap_load :: proc(atlas_path: cstring, tilemap_dim: [2]u16) -> Tilemap {
-	tileset_tex := tex_load(atlas_path)
+tilemap_load :: proc(tex_path: cstring, tilemap_dim: [2]u16) -> Tilemap {
+	tex := tex_load(tex_path)
 	tilemap := Tilemap {
 		dim = tilemap_dim,
 		placements = make([dynamic][dynamic]Tile_Placement, tilemap_dim.y),
 		tileset = {
-			tex = tileset_tex,
+			tex = tex,
 			tiles = make(
 				[dynamic]Tile,
-				(tileset_tex.height / i32(TILE_SIZE)) * (tileset_tex.width / i32(TILE_SIZE)),
+				(tex.height / i32(TILE_SIZE)) * (tex.width / i32(TILE_SIZE)),
 			),
 		},
 	}
 
-	tileset_width := tileset_tex.width / i32(TILE_SIZE)
+	assert(len(tilemap.tileset.tiles) - 1 <= int(max(Tile_Handle)))
+
+	tileset_width := tex.width / i32(TILE_SIZE)
 	for &tile, i in tilemap.tileset.tiles {
-		x := i32(i) % tileset_width
-		y := i32(i) / tileset_width
+		tile_h := Tile_Handle(i)
+
+		x := i32(tile_h) % tileset_width
+		y := i32(tile_h) / tileset_width
 		tile.tileset_pos = {f32(x) * f32(TILE_SIZE), f32(y) * f32(TILE_SIZE)}
 	}
 
@@ -91,10 +97,10 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 	// tile placements
 	for &row, y in tilemap.placements {
 		for &tile_placement, x in row {
-			tile_index := tile_placement.tile_index
-			if tile_index < 0 || int(tile_index) >= len(tilemap.tileset.tiles) do continue
+			tile_h := tile_placement.tile_h
+			if tile_h < 0 || int(tile_h) >= len(tilemap.tileset.tiles) do continue
 
-			tile := tilemap.tileset.tiles[tile_index]
+			tile := tilemap.tileset.tiles[tile_h]
 			rl.DrawTexturePro(
 				tilemap.tileset.tex,
 				{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},

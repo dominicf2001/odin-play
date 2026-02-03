@@ -117,7 +117,7 @@ main :: proc() {
 			rl.EndMode2D()
 		}
 
-		// UI
+		// GUI
 		{
 			// entity list
 			selected_entity_h := gui_entity_list({0, 0, 74, 200}, &w.tilemap.entities)
