@@ -15,9 +15,7 @@ GUI :: struct {
 
 gui := GUI{}
 
-gui_entity_list :: proc(
-	entities: ^hm.Static_Handle_Map(ENTITIES_MAX, Entity, Entity_Handle),
-) -> Entity_Handle {
+gui_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> Entity_Handle {
 	sa.clear(&gui.entity_list.handles)
 
 	entity_list_sb := strings.builder_make(context.temp_allocator)
@@ -32,7 +30,7 @@ gui_entity_list :: proc(
 		num += 1
 	}
 	rl.GuiListView(
-		{0, 0, 74, 200},
+		bounds,
 		strings.to_cstring(&entity_list_sb),
 		&gui.entity_list.scroll_index,
 		&gui.entity_list.active,
@@ -42,4 +40,25 @@ gui_entity_list :: proc(
 		return handle
 	}
 	return {}
+}
+
+gui_tileset_pallete :: proc(pos: World_Pos, tileset: ^Tileset) {
+	tileset_width := tileset.tex.width / i32(TILE_SIZE)
+	for &tile, i in tileset.tiles {
+		col := i32(i) % tileset_width
+		row := i32(i) / tileset_width
+		rl.DrawTexturePro(
+			tileset.tex,
+			{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},
+			{
+				pos.x + f32(col * i32(TILE_SIZE)),
+				pos.y + f32(row * i32(TILE_SIZE)),
+				f32(TILE_SIZE),
+				f32(TILE_SIZE),
+			},
+			{},
+			0,
+			rl.WHITE,
+		)
+	}
 }

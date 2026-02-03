@@ -4,8 +4,15 @@ import hm "core:container/handle_map"
 import "core:fmt"
 import rl "vendor:raylib"
 
-WINDOW_WIDTH :: 1280
-WINDOW_HEIGHT :: 720
+WINDOW_WIDTH :: 1920
+WINDOW_HEIGHT :: 1080
+
+World :: struct {
+	camera:  rl.Camera2D,
+	tilemap: Tilemap,
+}
+
+World_Pos :: [2]f32
 
 tex_load :: proc(tex_path: cstring) -> rl.Texture {
 	@(static) cache := map[cstring]rl.Texture{}
@@ -24,23 +31,23 @@ main :: proc() {
 	rl.InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Odin play!")
 
 	// initialize world
-	world := World{}
+	w := World{}
 
 	// camera
-	world.camera = rl.Camera2D {
+	w.camera = rl.Camera2D {
 		offset = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2},
 		zoom   = 2.0,
 	}
 
+	// tile map
+	w.tilemap = tilemap_load("tex/t_woods.png", {10, 10})
+	defer tilemap_unload(&w.tilemap)
+
 	// player entity
-	world.player_h = hm.add(
-		&world.entities,
+	player_h := hm.add(
+		&w.tilemap.entities,
 		Entity{name = "Player", pos = {0, 0}, tex_path = "tex/player.png"},
 	)
-
-	// tile map
-	world.tilemap = tilemap_load("tex/t_woods.png", {10, 30})
-	defer tilemap_unload(&world.tilemap)
 
 	//----------------------------------------------------------------------------------
 
@@ -48,7 +55,7 @@ main :: proc() {
 		// UPDATE
 		//----------------------------------------------------------------------------------
 
-		if player, ok := hm.get(&world.entities, world.player_h); ok {
+		if player, ok := hm.get(&w.tilemap.entities, player_h); ok {
 			is_movement_active := entity_movement_advance(player, rl.GetFrameTime())
 			if !is_movement_active {
 				og_pos := player.pos
@@ -61,12 +68,12 @@ main :: proc() {
 				if rl.IsKeyDown(.D) do target_pos.x += 1
 
 				// check entity collisions
-				it := hm.iterator_make(&world.entities)
+				it := hm.iterator_make(&w.tilemap.entities)
 				for e in hm.iterate(&it) {
 					if player == e do continue
 
 					for _, axis in target_pos {
-						if rl.CheckCollisionRecs(rec(target_pos), rec(e)) {
+						if rl.CheckCollisionRecs(t_rec(target_pos), t_rec(e)) {
 							target_pos[axis] = og_pos[axis]
 						}
 					}
@@ -74,7 +81,7 @@ main :: proc() {
 
 				// check tilemap OOB
 				for _, axis in target_pos {
-					if !rl.CheckCollisionRecs(rec(target_pos), rec(&world.tilemap)) {
+					if !rl.CheckCollisionRecs(t_rec(target_pos), t_rec(&w.tilemap)) {
 						target_pos[axis] = og_pos[axis]
 					}
 				}
@@ -85,8 +92,8 @@ main :: proc() {
 			}
 
 			// point camera to player
-			player_rec := rec(player)
-			world.camera.target = {
+			player_rec := t_rec(player)
+			w.camera.target = {
 				player_rec.x + f32(TILE_SIZE) / 2,
 				player_rec.y + f32(TILE_SIZE) / 2,
 			}
@@ -101,31 +108,23 @@ main :: proc() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.BLACK)
 
-		// World
+		// Tilemap
 		{
-			rl.BeginMode2D(world.camera)
+			rl.BeginMode2D(w.camera)
 
-			// tile map
-			draw(&world.tilemap)
-			// draw(&world.tilemap.tileset)
-
-			// entities
-			it := hm.iterator_make(&world.entities)
-			for e in hm.iterate(&it) {
-				draw(e)
-			}
+			tilemap_draw(&w.tilemap)
 
 			rl.EndMode2D()
 		}
 
 		// UI
 		{
-			selected_entity_h := gui_entity_list(&world.entities)
+			// entity list
+			selected_entity_h := gui_entity_list({0, 0, 74, 200}, &w.tilemap.entities)
+			if e, ok := hm.get(&w.tilemap.entities, selected_entity_h); ok {
+				rl.BeginMode2D(w.camera)
 
-			if e, ok := hm.get(&world.entities, selected_entity_h); ok {
-				rl.BeginMode2D(world.camera)
-
-				e_rec := rec(e)
+				e_rec := t_rec(e)
 				rl.DrawBoundingBox(
 					{
 						{e_rec.x, e_rec.y, 0},
@@ -136,6 +135,12 @@ main :: proc() {
 
 				rl.EndMode2D()
 			}
+
+			// tileset pallete
+			gui_tileset_pallete(
+				{0, WINDOW_HEIGHT - f32(w.tilemap.tileset.tex.height)},
+				&w.tilemap.tileset,
+			)
 		}
 
 		rl.EndDrawing()
