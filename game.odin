@@ -1,7 +1,10 @@
 package game
 
 import hm "core:container/handle_map"
+import "core:encoding/json"
 import "core:fmt"
+import "core:io"
+import os "core:os/os2"
 import rl "vendor:raylib"
 
 World :: struct {
@@ -38,14 +41,32 @@ main :: proc() {
 	}
 
 	// tile map
-	w.tilemap = tilemap_load("tex/t_woods.png", {10, 10})
-	defer tilemap_unload(&w.tilemap)
+	data, err := os.read_entire_file("data/tilemap.json", context.allocator)
+	defer delete(data)
 
-	// player entity
-	player_h := hm.add(
-		&w.tilemap.entities,
-		Entity{name = "Player", pos = {0, 0}, tex_path = "tex/player.png"},
-	)
+	player_h: Entity_Handle
+	if err != nil {
+		fmt.eprintfln("Unable to unmarshal tilemap: %v", err)
+
+		w.tilemap = tilemap_load("tex/t_woods.png", {10, 10})
+
+		player_h := hm.add(
+			&w.tilemap.entities,
+			Entity{name = "Player", pos = {0, 0}, tex_path = "tex/player.png"},
+		)
+	} else {
+		json.unmarshal(data, &w.tilemap)
+		w.tilemap.tileset.tex = tex_load("tex/t_woods.png")
+
+		it := hm.iterator_make(&w.tilemap.entities)
+		for e, h in hm.iterate(&it) {
+			if e.name == "Player" {
+				player_h = h
+				break
+			}
+		}
+	}
+	defer tilemap_unload(&w.tilemap)
 
 	//----------------------------------------------------------------------------------
 
@@ -117,12 +138,44 @@ main :: proc() {
 
 		// GUI
 		{
+			// toolbar
+			bg_color := rl.GetColor(
+				u32(
+					rl.GuiGetStyle(
+						rl.GuiControl.DEFAULT,
+						i32(rl.GuiDefaultProperty.BACKGROUND_COLOR),
+					),
+				),
+			)
+
+			toolbar_height := f32(30)
+			rl.DrawRectangleRec({0, 0, f32(rl.GetScreenWidth()), toolbar_height}, bg_color)
+
+			// save button
+			if rl.GuiButton(
+				{5, toolbar_height / 5, toolbar_height * 2, toolbar_height / 1.5},
+				"Save",
+			) {
+				if data, err := json.marshal(w.tilemap, {pretty = true}); err != nil {
+					fmt.eprintfln("Unable to marshal tilemap: %v", err)
+				} else {
+					if err := os.write_entire_file("data/tilemap.json", data); err != nil {
+						fmt.eprintfln("Unable to write tilemap: %v", err)
+					}
+				}
+			}
+
 			// left panel
-			rl.GuiPanel({0, 0, 75, f32(rl.GetScreenHeight())}, "Entities")
+			l_panel_width := f32(75)
+			l_panel_s_pos := Screen_Pos{0, toolbar_height}
+			rl.GuiPanel(
+				{l_panel_s_pos.x, l_panel_s_pos.y, l_panel_width, f32(rl.GetScreenHeight())},
+				"Entities",
+			)
 
 			// entity list
 			selected_entity_h := gui_entity_list(
-				{0, 24, 75, f32(rl.GetScreenHeight())},
+				{l_panel_s_pos.x, l_panel_s_pos.y + 24, l_panel_width, f32(rl.GetScreenHeight())},
 				&w.tilemap.entities,
 			)
 			if e, ok := hm.get(&w.tilemap.entities, selected_entity_h); ok {
@@ -140,7 +193,7 @@ main :: proc() {
 			// right panel
 			r_panel_padding := f32(10)
 			r_panel_width := f32(w.tilemap.tileset.tex.width) + r_panel_padding
-			r_panel_s_pos := Screen_Pos{f32(rl.GetScreenWidth()) - r_panel_width, 0}
+			r_panel_s_pos := Screen_Pos{f32(rl.GetScreenWidth()) - r_panel_width, toolbar_height}
 			rl.GuiPanel(
 				{
 					r_panel_s_pos.x,
