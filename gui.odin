@@ -50,11 +50,6 @@ gui_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> E
 }
 
 gui_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset) -> i32 {
-	rl.DrawRectangleRec(
-		rl.Rectangle{s_pos.x, s_pos.y, f32(tileset.tex.width), f32(tileset.tex.height)},
-		rl.WHITE,
-	)
-
 	for &tile, i in tileset.tiles {
 		tile_h := Tile_Handle(i)
 

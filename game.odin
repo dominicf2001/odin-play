@@ -34,7 +34,7 @@ main :: proc() {
 	// camera
 	w.camera = rl.Camera2D {
 		offset = {f32(rl.GetScreenWidth()) / 2, f32(rl.GetScreenHeight()) / 2},
-		zoom   = 1.0,
+		zoom   = 2.0,
 	}
 
 	// tile map
@@ -131,9 +131,22 @@ main :: proc() {
 				rl.EndMode2D()
 			}
 
-			// tileset pallete
+			// right panel
+			r_panel_padding := f32(10)
+			r_panel_width := f32(w.tilemap.tileset.tex.width) + r_panel_padding
+			r_panel_s_pos := Screen_Pos{f32(rl.GetScreenWidth()) - r_panel_width, 0}
+			rl.GuiPanel(
+				{
+					r_panel_s_pos.x,
+					r_panel_s_pos.y,
+					r_panel_width,
+					f32(w.tilemap.tileset.tex.height) + r_panel_padding + 25,
+				},
+				"Tileset",
+			)
+
 			selected_tile_h := gui_tileset_pallete(
-				{0, f32(rl.GetScreenHeight()) - f32(w.tilemap.tileset.tex.height)},
+				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
 				&w.tilemap.tileset,
 			)
 			if selected_tile_h != -1 {
