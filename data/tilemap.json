@@ -4,6 +4,7 @@
 		10
 	],
 	"tileset": {
+		"tex_path": "tex/t_woods.png",
 		"tex": {
 			"id": 3,
 			"width": 352,
@@ -1601,322 +1602,322 @@
 	"placements": [
 		[
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 142
+				"tile_h": 0
 			},
 			{
-				"tile_h": 143
+				"tile_h": 0
 			},
 			{
-				"tile_h": 143
+				"tile_h": 0
 			},
 			{
-				"tile_h": 143
+				"tile_h": 0
 			},
 			{
-				"tile_h": 167
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 163
+				"tile_h": 69
 			},
 			{
-				"tile_h": 143
+				"tile_h": 69
 			},
 			{
-				"tile_h": 143
+				"tile_h": 69
 			},
 			{
-				"tile_h": 164
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 189
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 185
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 189
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 185
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 0
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 189
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 185
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 187
+				"tile_h": 69
 			},
 			{
-				"tile_h": 210
+				"tile_h": 0
 			},
 			{
-				"tile_h": 211
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 207
+				"tile_h": 0
 			},
 			{
-				"tile_h": 231
+				"tile_h": 0
 			},
 			{
-				"tile_h": 231
+				"tile_h": 69
 			},
 			{
-				"tile_h": 231
+				"tile_h": 69
 			},
 			{
-				"tile_h": 231
+				"tile_h": 69
 			},
 			{
-				"tile_h": 231
+				"tile_h": 0
 			},
 			{
-				"tile_h": 232
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		],
 		[
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			},
 			{
-				"tile_h": 145
+				"tile_h": 0
 			}
 		]
 	],
@@ -1946,8 +1947,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					5,
-					4
+					3,
+					7
 				],
 				"tex_path": "tex/player.png",
 				"movement": {
@@ -24456,5 +24457,9 @@
 			0
 		],
 		"next_unused": 0
+	},
+	"player_h": {
+		"idx": 1,
+		"gen": 1
 	}
 }

@@ -3,7 +3,6 @@ package game
 import hm "core:container/handle_map"
 import "core:encoding/json"
 import "core:fmt"
-import "core:io"
 import os "core:os/os2"
 import rl "vendor:raylib"
 
@@ -41,32 +40,14 @@ main :: proc() {
 	}
 
 	// tile map
-	data, err := os.read_entire_file("data/tilemap.json", context.allocator)
-	defer delete(data)
-
-	player_h: Entity_Handle
-	if err != nil {
-		fmt.eprintfln("Unable to unmarshal tilemap: %v", err)
-
-		w.tilemap = tilemap_load("tex/t_woods.png", {10, 10})
-
-		player_h := hm.add(
-			&w.tilemap.entities,
-			Entity{name = "Player", pos = {0, 0}, tex_path = "tex/player.png"},
-		)
-	} else {
-		json.unmarshal(data, &w.tilemap)
-		w.tilemap.tileset.tex = tex_load("tex/t_woods.png")
-
-		it := hm.iterator_make(&w.tilemap.entities)
-		for e, h in hm.iterate(&it) {
-			if e.name == "Player" {
-				player_h = h
-				break
-			}
+	w.tilemap = tilemap_make("tex/t_woods.png", {10, 10})
+	if os.exists("data/tilemap.json") {
+		if err := tilemap_load("data/tilemap.json", &w.tilemap); err != nil {
+			fmt.eprintfln("Unable to load tilemap: %v", err)
 		}
 	}
-	defer tilemap_unload(&w.tilemap)
+
+	defer tilemap_destroy(&w.tilemap)
 
 	//----------------------------------------------------------------------------------
 
@@ -74,7 +55,7 @@ main :: proc() {
 		// UPDATE
 		//----------------------------------------------------------------------------------
 
-		if player, ok := hm.get(&w.tilemap.entities, player_h); ok {
+		if player, ok := hm.get(&w.tilemap.entities, w.tilemap.player_h); ok {
 			is_movement_active := entity_movement_advance(player, rl.GetFrameTime())
 			if !is_movement_active {
 				og_pos := player.pos
@@ -148,7 +129,7 @@ main :: proc() {
 				),
 			)
 
-			toolbar_height := f32(30)
+			toolbar_height := f32(40)
 			rl.DrawRectangleRec({0, 0, f32(rl.GetScreenWidth()), toolbar_height}, bg_color)
 
 			// save button

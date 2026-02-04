@@ -1,7 +1,9 @@
 package game
 
 import hm "core:container/handle_map"
+import "core:encoding/json"
 import "core:fmt"
+import os "core:os/os2"
 import rl "vendor:raylib"
 
 TILEMAP_W_POS :: World_Pos{0, 0}
@@ -15,6 +17,7 @@ Tilemap :: struct {
 	tileset:    Tileset,
 	placements: [dynamic][dynamic]Tile_Placement,
 	entities:   Entity_Handle_Map,
+	player_h:   Entity_Handle,
 }
 
 Tilemap_Dim :: distinct [2]u16 // by tiles
@@ -22,8 +25,9 @@ Tilemap_Dim :: distinct [2]u16 // by tiles
 Tile_Pos :: distinct [2]u16
 
 Tileset :: struct {
-	tex:   rl.Texture,
-	tiles: [dynamic]Tile,
+	tex_path: cstring,
+	tex:      rl.Texture,
+	tiles:    [dynamic]Tile,
 }
 
 Tile :: struct {
@@ -55,12 +59,14 @@ Movement :: struct {
 	active:     bool,
 }
 
-tilemap_load :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
+tilemap_make :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
 	tex := tex_load(tex_path)
+
 	tilemap := Tilemap {
 		dim = tilemap_dim,
 		placements = make([dynamic][dynamic]Tile_Placement, tilemap_dim.y),
 		tileset = {
+			tex_path = tex_path,
 			tex = tex,
 			tiles = make(
 				[dynamic]Tile,
@@ -68,6 +74,11 @@ tilemap_load :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
 			),
 		},
 	}
+
+	tilemap.player_h = hm.add(
+		&tilemap.entities,
+		Entity{name = "Player", pos = {0, 0}, tex_path = "tex/player.png"},
+	)
 
 	assert(len(tilemap.tileset.tiles) - 1 <= int(max(Tile_Handle)))
 
@@ -87,7 +98,15 @@ tilemap_load :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
 	return tilemap
 }
 
-tilemap_unload :: proc(tilemap: ^Tilemap) {
+tilemap_load :: proc(tilemap_path: string, tilemap: ^Tilemap) -> os.Error {
+	data := os.read_entire_file(tilemap_path, context.allocator) or_return
+	defer delete(data)
+	json.unmarshal(data, tilemap)
+	tilemap.tileset.tex = tex_load(tilemap.tileset.tex_path)
+	return nil
+}
+
+tilemap_destroy :: proc(tilemap: ^Tilemap) {
 	for &t_row in tilemap.placements {
 		delete(t_row)
 	}
