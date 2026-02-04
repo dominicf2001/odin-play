@@ -13,11 +13,11 @@ ENTITIES_MAX :: 1024
 PLAYER_SPEED :: 500.0
 
 Tilemap :: struct {
-	dim:        Tilemap_Dim,
-	tileset:    Tileset,
-	placements: [dynamic][dynamic]Tile_Placement,
-	entities:   Entity_Handle_Map,
-	player_h:   Entity_Handle,
+	dim:      Tilemap_Dim,
+	tileset:  Tileset,
+	layers:   [2][dynamic][dynamic]Tile_Placement,
+	entities: Entity_Handle_Map,
+	player_h: Entity_Handle,
 }
 
 Tilemap_Dim :: distinct [2]u16 // by tiles
@@ -64,7 +64,6 @@ tilemap_make :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
 
 	tilemap := Tilemap {
 		dim = tilemap_dim,
-		placements = make([dynamic][dynamic]Tile_Placement, tilemap_dim.y),
 		tileset = {
 			tex_path = tex_path,
 			tex = tex,
@@ -73,6 +72,10 @@ tilemap_make :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
 				(tex.height / i32(TILE_SIZE)) * (tex.width / i32(TILE_SIZE)),
 			),
 		},
+	}
+
+	for &layer in tilemap.layers {
+		layer = make([dynamic][dynamic]Tile_Placement, tilemap_dim.y)
 	}
 
 	tilemap.player_h = hm.add(
@@ -91,8 +94,10 @@ tilemap_make :: proc(tex_path: cstring, tilemap_dim: Tilemap_Dim) -> Tilemap {
 		tile.tileset_pos = {f32(x) * f32(TILE_SIZE), f32(y) * f32(TILE_SIZE)}
 	}
 
-	for &row, y in tilemap.placements {
-		row = make([dynamic]Tile_Placement, tilemap_dim.x)
+	for layer in tilemap.layers {
+		for &row, y in layer {
+			row = make([dynamic]Tile_Placement, tilemap_dim.x)
+		}
 	}
 
 	return tilemap
@@ -107,10 +112,12 @@ tilemap_load :: proc(tilemap_path: string, tilemap: ^Tilemap) -> os.Error {
 }
 
 tilemap_destroy :: proc(tilemap: ^Tilemap) {
-	for &t_row in tilemap.placements {
-		delete(t_row)
+	for &layer in tilemap.layers {
+		for &t_row in layer {
+			delete(t_row)
+		}
+		delete(layer)
 	}
-	delete(tilemap.placements)
 	delete(tilemap.tileset.tiles)
 }
 
@@ -119,21 +126,23 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 	rl.DrawRectangleRec(rec(tilemap), rl.WHITE)
 
 	// tile placements
-	for &row, y in tilemap.placements {
-		for &tile_placement, x in row {
-			tile_h := tile_placement.tile_h
-			if tile_h < 0 || int(tile_h) >= len(tilemap.tileset.tiles) do continue
+	for &layer in tilemap.layers {
+		for &row, y in layer {
+			for &tile_placement, x in row {
+				tile_h := tile_placement.tile_h
+				if tile_h < 0 || int(tile_h) >= len(tilemap.tileset.tiles) do continue
 
-			tile := tilemap.tileset.tiles[tile_h]
-			rl.DrawTexturePro(
-				tilemap.tileset.tex,
-				{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},
-				rec(Tile_Pos{u16(x), u16(y)}),
-				{},
-				0,
-				rl.WHITE,
-			)
-			rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
+				tile := tilemap.tileset.tiles[tile_h]
+				rl.DrawTexturePro(
+					tilemap.tileset.tex,
+					{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},
+					rec(Tile_Pos{u16(x), u16(y)}),
+					{},
+					0,
+					rl.WHITE,
+				)
+				rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
+			}
 		}
 	}
 

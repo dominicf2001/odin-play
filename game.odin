@@ -46,7 +46,6 @@ main :: proc() {
 			fmt.eprintfln("Unable to load tilemap: %v", err)
 		}
 	}
-
 	defer tilemap_destroy(&w.tilemap)
 
 	//----------------------------------------------------------------------------------
@@ -194,7 +193,7 @@ main :: proc() {
 				rl.BeginMode2D(w.camera)
 				mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
 				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-					tile_placement := &w.tilemap.placements[pos.y][pos.x]
+					tile_placement := &w.tilemap.layers[0][pos.y][pos.x]
 
 					if rl.CheckCollisionPointRec(mouse_w_pos, rec(pos)) {
 						rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})

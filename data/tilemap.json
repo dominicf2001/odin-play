@@ -1599,326 +1599,650 @@
 			}
 		]
 	},
-	"placements": [
+	"layers": [
 		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 180
+				},
+				{
+					"tile_h": 180
+				},
+				{
+					"tile_h": 180
+				},
+				{
+					"tile_h": 180
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 180
+				},
+				{
+					"tile_h": 180
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			]
 		],
 		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 69
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
-		],
-		[
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			},
-			{
-				"tile_h": 0
-			}
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			],
+			[
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				},
+				{
+					"tile_h": 0
+				}
+			]
 		]
 	],
 	"entities": {
@@ -1947,8 +2271,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					3,
-					7
+					4,
+					5
 				],
 				"tex_path": "tex/player.png",
 				"movement": {
