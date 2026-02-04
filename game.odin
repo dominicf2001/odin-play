@@ -117,8 +117,14 @@ main :: proc() {
 
 		// GUI
 		{
+			// left panel
+			rl.GuiPanel({0, 0, 75, f32(rl.GetScreenHeight())}, "Entities")
+
 			// entity list
-			selected_entity_h := gui_entity_list({0, 0, 74, 200}, &w.tilemap.entities)
+			selected_entity_h := gui_entity_list(
+				{0, 24, 75, f32(rl.GetScreenHeight())},
+				&w.tilemap.entities,
+			)
 			if e, ok := hm.get(&w.tilemap.entities, selected_entity_h); ok {
 				rl.BeginMode2D(w.camera)
 
@@ -145,6 +151,7 @@ main :: proc() {
 				"Tileset",
 			)
 
+			// tileset pallete
 			selected_tile_h := gui_tileset_pallete(
 				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
 				&w.tilemap.tileset,
