@@ -6,6 +6,11 @@ import "core:fmt"
 import os "core:os/os2"
 import rl "vendor:raylib"
 
+Mode :: enum {
+	TILE_SELECT,
+	TILE_PAINT,
+}
+
 World :: struct {
 	camera:  rl.Camera2D,
 	tilemap: Tilemap,
@@ -29,6 +34,9 @@ main :: proc() {
 	//----------------------------------------------------------------------------------
 
 	rl.InitWindow(1280, 720, "Odin play!")
+
+	// initialize mode
+	mode := Mode.TILE_SELECT
 
 	// initialize world
 	w := World{}
@@ -145,17 +153,38 @@ main :: proc() {
 				}
 			}
 
+			// mode indicator
+			mode_text: cstring
+			switch (mode) {
+			case .TILE_SELECT:
+				mode_text = "-- TILE SELECT -- "
+			case .TILE_PAINT:
+				mode_text = "-- TILE PAINT -- "
+			}
+			rl.DrawText(
+				mode_text,
+				rl.GetScreenWidth() - i32(len(mode_text)) * 6,
+				i32(toolbar_height / 2.5),
+				4,
+				rl.BLACK,
+			)
+
 			// left panel
 			l_panel_width := f32(75)
-			l_panel_s_pos := Screen_Pos{0, toolbar_height}
+			l_panel_s_pos := Screen_Pos{5, toolbar_height + 5}
 			rl.GuiPanel(
-				{l_panel_s_pos.x, l_panel_s_pos.y, l_panel_width, f32(rl.GetScreenHeight())},
+				{l_panel_s_pos.x, l_panel_s_pos.y, l_panel_width, f32(rl.GetScreenHeight() - 75)},
 				"Entities",
 			)
 
 			// entity list
 			selected_entity_h := gui_entity_list(
-				{l_panel_s_pos.x, l_panel_s_pos.y + 24, l_panel_width, f32(rl.GetScreenHeight())},
+				{
+					l_panel_s_pos.x,
+					l_panel_s_pos.y + 24,
+					l_panel_width,
+					f32(rl.GetScreenHeight() - 75),
+				},
 				&w.tilemap.entities,
 			)
 			if e, ok := hm.get(&w.tilemap.entities, selected_entity_h); ok {
@@ -173,14 +202,13 @@ main :: proc() {
 			// right panel
 			r_panel_padding := f32(10)
 			r_panel_width := f32(w.tilemap.tileset.tex.width) + r_panel_padding
-			r_panel_s_pos := Screen_Pos{f32(rl.GetScreenWidth()) - r_panel_width, toolbar_height}
+			r_panel_height := f32(w.tilemap.tileset.tex.height) + r_panel_padding + 50
+			r_panel_s_pos := Screen_Pos {
+				f32(rl.GetScreenWidth()) - r_panel_width - 5,
+				toolbar_height + 5,
+			}
 			rl.GuiPanel(
-				{
-					r_panel_s_pos.x,
-					r_panel_s_pos.y,
-					r_panel_width,
-					f32(w.tilemap.tileset.tex.height) + r_panel_padding + 50,
-				},
+				{r_panel_s_pos.x, r_panel_s_pos.y, r_panel_width, r_panel_height},
 				"Tileset",
 			)
 
@@ -195,25 +223,68 @@ main :: proc() {
 			)
 
 			// tileset pallete
-			selected_tile_h := gui_tileset_pallete(
+			gui_tileset_pallete(
 				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 65},
 				&w.tilemap.tileset,
+				&gui.tileset_pallete.active_tile_h,
 			)
-			if selected_tile_h != -1 {
-				rl.BeginMode2D(w.camera)
-				mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
+
+			// update mode
+			mode = gui.tileset_pallete.active_tile_h != -1 ? .TILE_PAINT : .TILE_SELECT
+
+			mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
+			switch (mode) {
+			case .TILE_SELECT:
 				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
 					tile_placement := &w.tilemap.layers[gui.selected_layer][pos.y][pos.x]
 
-					if rl.CheckCollisionPointRec(mouse_w_pos, rec(pos)) {
-						rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
-					}
+					rl.BeginMode2D(w.camera)
+					rl.DrawRectangleLinesEx(rec(pos), 1, {255, 255, 255, 200})
+					rl.EndMode2D()
 
-					if rl.IsMouseButtonDown(.LEFT) {
-						tile_placement.tile_h = Tile_Handle(selected_tile_h)
+					if rl.IsMouseButtonPressed(.LEFT) {
+						if gui.selected_tile_pos == nil {
+							gui.selected_tile_pos = new(Tile_Pos)
+						}
+
+						if gui.selected_tile_pos^ == pos {
+							free(gui.selected_tile_pos)
+							gui.selected_tile_pos = nil
+						} else {
+							gui.selected_tile_pos^ = pos
+						}
+					}
+				} else if (rl.IsMouseButtonPressed(.LEFT)) {
+					free(gui.selected_tile_pos)
+					gui.selected_tile_pos = nil
+				}
+
+				if gui.selected_tile_pos != nil {
+					rl.BeginMode2D(w.camera)
+					rl.DrawRectangleLinesEx(rec(gui.selected_tile_pos^), 1, {255, 255, 255, 160})
+					rl.EndMode2D()
+					rl.GuiPanel(
+						{
+							r_panel_s_pos.x,
+							r_panel_s_pos.y + r_panel_height + 5,
+							r_panel_width,
+							200,
+						},
+						"Tile placement",
+					)
+				}
+			case .TILE_PAINT:
+				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
+					tile_placement := &w.tilemap.layers[gui.selected_layer][pos.y][pos.x]
+
+					rl.BeginMode2D(w.camera)
+					rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
+					rl.EndMode2D()
+
+					if rl.IsMouseButtonPressed(.LEFT) {
+						tile_placement.tile_h = Tile_Handle(gui.tileset_pallete.active_tile_h)
 					}
 				}
-				rl.EndMode2D()
 			}
 		}
 

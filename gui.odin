@@ -6,15 +6,16 @@ import "core:strings"
 import rl "vendor:raylib"
 
 GUI :: struct {
-	entity_list:     struct {
+	entity_list:       struct {
 		active_entity_h: i32,
 		scroll_index:    i32,
 		handles:         sa.Small_Array(ENTITIES_MAX, Entity_Handle),
 	},
-	tileset_pallete: struct {
+	tileset_pallete:   struct {
 		active_tile_h: i32,
 	},
-	selected_layer:  i32,
+	selected_tile_pos: ^Tile_Pos,
+	selected_layer:    i32,
 }
 
 gui := GUI {
@@ -50,7 +51,7 @@ gui_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> E
 	return {}
 }
 
-gui_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset) -> i32 {
+gui_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset, active_tile_h: ^i32) -> i32 {
 	for &tile, i in tileset.tiles {
 		tile_h := Tile_Handle(i)
 
@@ -75,21 +76,21 @@ gui_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset) -> i32 {
 		)
 
 		is_mouse_colliding := rl.CheckCollisionPointRec(rl.GetMousePosition(), tile_bounds)
-		if i32(tile_h) == gui.tileset_pallete.active_tile_h {
+		if i32(tile_h) == active_tile_h^ {
 			line_thickness: f32 = is_mouse_colliding ? 2 : 1
 			rl.DrawRectangleLinesEx(tile_bounds, line_thickness, rl.BLACK)
 
 			if is_mouse_colliding && rl.IsMouseButtonPressed(.LEFT) {
-				gui.tileset_pallete.active_tile_h = -1
+				active_tile_h^ = -1
 			}
 		} else if is_mouse_colliding {
 			rl.DrawRectangleLinesEx(tile_bounds, 1, rl.LIGHTGRAY)
 
 			if rl.IsMouseButtonPressed(.LEFT) {
-				gui.tileset_pallete.active_tile_h = i32(tile_h)
+				active_tile_h^ = i32(tile_h)
 			}
 		}
 	}
 
-	return gui.tileset_pallete.active_tile_h
+	return active_tile_h^
 }
