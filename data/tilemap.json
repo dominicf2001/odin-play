@@ -1778,13 +1778,13 @@
 					"tile_h": 187
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73
 				},
 				{
 					"tile_h": 187
@@ -1848,7 +1848,7 @@
 					"tile_h": 73
 				},
 				{
-					"tile_h": 73
+					"tile_h": 187
 				},
 				{
 					"tile_h": 187
@@ -1877,7 +1877,7 @@
 					"tile_h": 73
 				},
 				{
-					"tile_h": 73
+					"tile_h": 187
 				},
 				{
 					"tile_h": 187
@@ -2027,7 +2027,7 @@
 					"tile_h": 0
 				},
 				{
-					"tile_h": 81
+					"tile_h": 9
 				},
 				{
 					"tile_h": 0
@@ -2135,7 +2135,7 @@
 					"tile_h": 0
 				},
 				{
-					"tile_h": 0
+					"tile_h": 8
 				},
 				{
 					"tile_h": 0
@@ -2271,8 +2271,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					4,
-					6
+					6,
+					7
 				],
 				"tex_path": "tex/player.png",
 				"movement": {

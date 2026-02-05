@@ -6,11 +6,6 @@ import "core:fmt"
 import os "core:os/os2"
 import rl "vendor:raylib"
 
-Mode :: enum {
-	TILE_SELECT,
-	TILE_PAINT,
-}
-
 World :: struct {
 	camera:  rl.Camera2D,
 	tilemap: Tilemap,
@@ -34,9 +29,6 @@ main :: proc() {
 	//----------------------------------------------------------------------------------
 
 	rl.InitWindow(1280, 720, "Odin play!")
-
-	// initialize mode
-	mode := Mode.TILE_SELECT
 
 	// initialize world
 	w := World{}
@@ -155,18 +147,32 @@ main :: proc() {
 
 			// mode indicator
 			mode_text: cstring
-			switch (mode) {
+			switch (editor.mode) {
 			case .TILE_SELECT:
 				mode_text = "-- TILE SELECT -- "
 			case .TILE_PAINT:
 				mode_text = "-- TILE PAINT -- "
 			}
+			mode_indicator_s_pos := Screen_Pos {
+				f32(rl.GetScreenWidth() - i32(len(mode_text)) * 6),
+				toolbar_height / 2.5,
+			}
 			rl.DrawText(
 				mode_text,
-				rl.GetScreenWidth() - i32(len(mode_text)) * 6,
-				i32(toolbar_height / 2.5),
+				i32(mode_indicator_s_pos.x),
+				i32(mode_indicator_s_pos.y),
 				4,
 				rl.BLACK,
+			)
+
+			editor.selected_layer = clamp(editor.selected_layer, 0, 1)
+			rl.GuiSpinner(
+				{mode_indicator_s_pos.x - 125, toolbar_height / 5, 100, 25},
+				"Layer",
+				&editor.selected_layer,
+				0,
+				1,
+				true,
 			)
 
 			// left panel
@@ -178,7 +184,7 @@ main :: proc() {
 			)
 
 			// entity list
-			selected_entity_h := gui_entity_list(
+			selected_entity_h := editor_entity_list(
 				{
 					l_panel_s_pos.x,
 					l_panel_s_pos.y + 24,
@@ -202,7 +208,7 @@ main :: proc() {
 			// right panel
 			r_panel_padding := f32(10)
 			r_panel_width := f32(w.tilemap.tileset.tex.width) + r_panel_padding
-			r_panel_height := f32(w.tilemap.tileset.tex.height) + r_panel_padding + 50
+			r_panel_height := f32(w.tilemap.tileset.tex.height) + r_panel_padding + 25
 			r_panel_s_pos := Screen_Pos {
 				f32(rl.GetScreenWidth()) - r_panel_width - 5,
 				toolbar_height + 5,
@@ -212,56 +218,49 @@ main :: proc() {
 				"Tileset",
 			)
 
-			gui.selected_layer = clamp(gui.selected_layer, 0, 1)
-			rl.GuiSpinner(
-				{r_panel_s_pos.x + 35, r_panel_s_pos.y + 30, 100, 25},
-				"Layer",
-				&gui.selected_layer,
-				0,
-				1,
-				true,
-			)
-
 			// tileset pallete
-			gui_tileset_pallete(
-				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 65},
+			editor_tileset_pallete(
+				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
 				&w.tilemap.tileset,
-				&gui.tileset_pallete.active_tile_h,
+				&editor.component.tileset_pallete.active,
 			)
-
-			// update mode
-			mode = gui.tileset_pallete.active_tile_h != -1 ? .TILE_PAINT : .TILE_SELECT
+			editor.mode =
+				editor.component.tileset_pallete.active != -1 ? .TILE_PAINT : .TILE_SELECT
 
 			mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
-			switch (mode) {
+			switch (editor.mode) {
 			case .TILE_SELECT:
 				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-					tile_placement := &w.tilemap.layers[gui.selected_layer][pos.y][pos.x]
+					tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
 
 					rl.BeginMode2D(w.camera)
 					rl.DrawRectangleLinesEx(rec(pos), 1, {255, 255, 255, 200})
 					rl.EndMode2D()
 
 					if rl.IsMouseButtonPressed(.LEFT) {
-						if gui.selected_tile_pos == nil {
-							gui.selected_tile_pos = new(Tile_Pos)
+						if editor.selected_tile_pos == nil {
+							editor.selected_tile_pos = new(Tile_Pos)
 						}
 
-						if gui.selected_tile_pos^ == pos {
-							free(gui.selected_tile_pos)
-							gui.selected_tile_pos = nil
+						if editor.selected_tile_pos^ == pos {
+							free(editor.selected_tile_pos)
+							editor.selected_tile_pos = nil
 						} else {
-							gui.selected_tile_pos^ = pos
+							editor.selected_tile_pos^ = pos
 						}
 					}
 				} else if (rl.IsMouseButtonPressed(.LEFT)) {
-					free(gui.selected_tile_pos)
-					gui.selected_tile_pos = nil
+					free(editor.selected_tile_pos)
+					editor.selected_tile_pos = nil
 				}
 
-				if gui.selected_tile_pos != nil {
+				if editor.selected_tile_pos != nil {
 					rl.BeginMode2D(w.camera)
-					rl.DrawRectangleLinesEx(rec(gui.selected_tile_pos^), 1, {255, 255, 255, 160})
+					rl.DrawRectangleLinesEx(
+						rec(editor.selected_tile_pos^),
+						1,
+						{255, 255, 255, 160},
+					)
 					rl.EndMode2D()
 					rl.GuiPanel(
 						{
@@ -275,14 +274,16 @@ main :: proc() {
 				}
 			case .TILE_PAINT:
 				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-					tile_placement := &w.tilemap.layers[gui.selected_layer][pos.y][pos.x]
+					tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
 
 					rl.BeginMode2D(w.camera)
 					rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
 					rl.EndMode2D()
 
 					if rl.IsMouseButtonPressed(.LEFT) {
-						tile_placement.tile_h = Tile_Handle(gui.tileset_pallete.active_tile_h)
+						tile_placement.tile_h = Tile_Handle(
+							editor.component.tileset_pallete.active,
+						)
 					}
 				}
 			}

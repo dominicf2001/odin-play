@@ -5,32 +5,39 @@ import "core:fmt"
 import "core:strings"
 import rl "vendor:raylib"
 
-GUI :: struct {
-	entity_list:       struct {
-		active_entity_h: i32,
-		scroll_index:    i32,
-		handles:         sa.Small_Array(ENTITIES_MAX, Entity_Handle),
-	},
-	tileset_pallete:   struct {
-		active_tile_h: i32,
+Editor_Mode :: enum {
+	TILE_SELECT,
+	TILE_PAINT,
+}
+
+Editor :: struct {
+	mode:              Editor_Mode,
+	component:         struct {
+		entity_list:     struct {
+			active:       i32,
+			scroll_index: i32,
+		},
+		tileset_pallete: struct {
+			active: i32,
+		},
 	},
 	selected_tile_pos: ^Tile_Pos,
 	selected_layer:    i32,
 }
 
-gui := GUI {
-	entity_list = {active_entity_h = -1},
-	tileset_pallete = {active_tile_h = -1},
+editor := Editor {
+	component = {entity_list = {active = -1}, tileset_pallete = {active = -1}},
 }
 
-gui_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> Entity_Handle {
-	sa.clear(&gui.entity_list.handles)
+editor_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> Entity_Handle {
+	entity_list := &editor.component.entity_list
 
 	entity_list_sb := strings.builder_make(context.temp_allocator)
 
+	handles := sa.Small_Array(ENTITIES_MAX, Entity_Handle){}
 	it, num := hm.iterator_make(entities), uint(0)
 	for e in hm.iterate(&it) {
-		sa.append(&gui.entity_list.handles, e.handle)
+		sa.append(&handles, e.handle)
 		strings.write_string(&entity_list_sb, e.name)
 		if num < hm.len(entities^) - 1 {
 			strings.write_byte(&entity_list_sb, ';')
@@ -40,18 +47,17 @@ gui_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> E
 	rl.GuiListView(
 		bounds,
 		strings.to_cstring(&entity_list_sb),
-		&gui.entity_list.scroll_index,
-		&gui.entity_list.active_entity_h,
+		&entity_list.scroll_index,
+		&entity_list.active,
 	)
 
-	if handle, ok := sa.get_safe(gui.entity_list.handles, int(gui.entity_list.active_entity_h));
-	   ok {
+	if handle, ok := sa.get_safe(handles, int(entity_list.active)); ok {
 		return handle
 	}
 	return {}
 }
 
-gui_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset, active_tile_h: ^i32) -> i32 {
+editor_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset, active_tile_h: ^i32) -> i32 {
 	for &tile, i in tileset.tiles {
 		tile_h := Tile_Handle(i)
 
