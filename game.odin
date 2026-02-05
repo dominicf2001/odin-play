@@ -78,10 +78,18 @@ main :: proc() {
 					}
 				}
 
-				// check tilemap OOB
-				for _, axis in target_pos {
-					if !rl.CheckCollisionRecs(rec(target_pos), rec(&w.tilemap)) {
-						target_pos[axis] = og_pos[axis]
+				// check tile collisions
+
+				for &layer in w.tilemap.layers {
+					for &row, y in layer {
+						for &tile_placement, x in row {
+							tile_pos := Tile_Pos{u16(x), u16(y)}
+							if tile_placement.is_collision {
+								if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
+									target_pos = og_pos
+								}
+							}
+						}
 					}
 				}
 
@@ -222,10 +230,10 @@ main :: proc() {
 			editor_tileset_pallete(
 				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
 				&w.tilemap.tileset,
-				&editor.component.tileset_pallete.active,
+				&editor.component.tileset_pallete.active_index,
 			)
 			editor.mode =
-				editor.component.tileset_pallete.active != -1 ? .TILE_PAINT : .TILE_SELECT
+				editor.component.tileset_pallete.active_index != -1 ? .TILE_PAINT : .TILE_SELECT
 
 			mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
 			switch (editor.mode) {
@@ -238,38 +246,41 @@ main :: proc() {
 					rl.EndMode2D()
 
 					if rl.IsMouseButtonPressed(.LEFT) {
-						if editor.selected_tile_pos == nil {
-							editor.selected_tile_pos = new(Tile_Pos)
-						}
-
-						if editor.selected_tile_pos^ == pos {
-							free(editor.selected_tile_pos)
-							editor.selected_tile_pos = nil
+						if editor.selected_tile_placement.pos == pos {
+							editor.selected_tile_placement = {}
 						} else {
-							editor.selected_tile_pos^ = pos
+							editor.selected_tile_placement = {
+								data = tile_placement,
+								pos  = pos,
+							}
 						}
 					}
-				} else if (rl.IsMouseButtonPressed(.LEFT)) {
-					free(editor.selected_tile_pos)
-					editor.selected_tile_pos = nil
 				}
+				// else if (rl.IsMouseButtonPressed(.LEFT)) {
+				// 	editor.selected_tile_placement = {}
+				// }
 
-				if editor.selected_tile_pos != nil {
+				if editor.selected_tile_placement.data != nil {
 					rl.BeginMode2D(w.camera)
 					rl.DrawRectangleLinesEx(
-						rec(editor.selected_tile_pos^),
+						rec(editor.selected_tile_placement.pos),
 						1,
 						{255, 255, 255, 160},
 					)
 					rl.EndMode2D()
-					rl.GuiPanel(
-						{
-							r_panel_s_pos.x,
-							r_panel_s_pos.y + r_panel_height + 5,
-							r_panel_width,
-							200,
-						},
-						"Tile placement",
+
+					placement_panel_rec := rl.Rectangle {
+						r_panel_s_pos.x,
+						r_panel_s_pos.y + r_panel_height + 5,
+						r_panel_width,
+						200,
+					}
+					rl.GuiPanel(placement_panel_rec, "Tile placement")
+
+					rl.GuiCheckBox(
+						{placement_panel_rec.x + 15, placement_panel_rec.y + 40, 25, 25},
+						"Is collision",
+						&editor.selected_tile_placement.data.is_collision,
 					)
 				}
 			case .TILE_PAINT:
@@ -282,7 +293,7 @@ main :: proc() {
 
 					if rl.IsMouseButtonPressed(.LEFT) {
 						tile_placement.tile_h = Tile_Handle(
-							editor.component.tileset_pallete.active,
+							editor.component.tileset_pallete.active_index,
 						)
 					}
 				}

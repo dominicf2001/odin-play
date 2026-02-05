@@ -11,22 +11,25 @@ Editor_Mode :: enum {
 }
 
 Editor :: struct {
-	mode:              Editor_Mode,
-	component:         struct {
+	mode:                    Editor_Mode,
+	component:               struct {
 		entity_list:     struct {
-			active:       i32,
+			active_index: i32,
 			scroll_index: i32,
 		},
 		tileset_pallete: struct {
-			active: i32,
+			active_index: i32,
 		},
 	},
-	selected_tile_pos: ^Tile_Pos,
-	selected_layer:    i32,
+	selected_tile_placement: struct {
+		data: ^Tile_Placement,
+		pos:  Tile_Pos,
+	},
+	selected_layer:          i32,
 }
 
 editor := Editor {
-	component = {entity_list = {active = -1}, tileset_pallete = {active = -1}},
+	component = {entity_list = {active_index = -1}, tileset_pallete = {active_index = -1}},
 }
 
 editor_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> Entity_Handle {
@@ -48,10 +51,10 @@ editor_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -
 		bounds,
 		strings.to_cstring(&entity_list_sb),
 		&entity_list.scroll_index,
-		&entity_list.active,
+		&entity_list.active_index,
 	)
 
-	if handle, ok := sa.get_safe(handles, int(entity_list.active)); ok {
+	if handle, ok := sa.get_safe(handles, int(entity_list.active_index)); ok {
 		return handle
 	}
 	return {}

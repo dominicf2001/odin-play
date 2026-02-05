@@ -35,7 +35,8 @@ Tile :: struct {
 }
 
 Tile_Placement :: struct {
-	tile_h: Tile_Handle,
+	tile_h:       Tile_Handle,
+	is_collision: bool,
 }
 
 Tile_Handle :: distinct u16

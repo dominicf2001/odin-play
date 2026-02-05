@@ -1603,644 +1603,844 @@
 		[
 			[
 				{
-					"tile_h": 145
+					"tile_h": 145,
+					"is_collision": false
 				},
 				{
-					"tile_h": 145
+					"tile_h": 145,
+					"is_collision": false
 				},
 				{
-					"tile_h": 145
+					"tile_h": 145,
+					"is_collision": false
 				},
 				{
-					"tile_h": 185
+					"tile_h": 185,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 145
+					"tile_h": 145,
+					"is_collision": false
 				},
 				{
-					"tile_h": 142
+					"tile_h": 142,
+					"is_collision": false
 				},
 				{
-					"tile_h": 143
+					"tile_h": 143,
+					"is_collision": false
 				},
 				{
-					"tile_h": 164
+					"tile_h": 164,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 142
+					"tile_h": 142,
+					"is_collision": false
 				},
 				{
-					"tile_h": 164
+					"tile_h": 164,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 207
+					"tile_h": 207,
+					"is_collision": false
 				},
 				{
-					"tile_h": 208
+					"tile_h": 208,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 77
+					"tile_h": 77,
+					"is_collision": true
 				},
 				{
-					"tile_h": 77
+					"tile_h": 77,
+					"is_collision": true
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 145
+					"tile_h": 145,
+					"is_collision": false
 				},
 				{
-					"tile_h": 185
+					"tile_h": 185,
+					"is_collision": false
 				},
 				{
-					"tile_h": 179
+					"tile_h": 179,
+					"is_collision": false
 				},
 				{
-					"tile_h": 179
+					"tile_h": 179,
+					"is_collision": false
 				},
 				{
-					"tile_h": 179
+					"tile_h": 179,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 165
+					"tile_h": 165,
+					"is_collision": true
 				},
 				{
-					"tile_h": 165
+					"tile_h": 165,
+					"is_collision": true
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 143
+					"tile_h": 143,
+					"is_collision": false
 				},
 				{
-					"tile_h": 164
+					"tile_h": 164,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 73,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 165
+					"tile_h": 165,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 73
+					"tile_h": 73,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				},
 				{
-					"tile_h": 187
+					"tile_h": 187,
+					"is_collision": false
 				}
 			]
 		],
 		[
 			[
 				{
-					"tile_h": 147
+					"tile_h": 147,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 18
+					"tile_h": 18,
+					"is_collision": false
 				},
 				{
-					"tile_h": 19
+					"tile_h": 19,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 39
+					"tile_h": 39,
+					"is_collision": false
 				},
 				{
-					"tile_h": 40
+					"tile_h": 40,
+					"is_collision": false
 				},
 				{
-					"tile_h": 41
+					"tile_h": 41,
+					"is_collision": false
 				},
 				{
-					"tile_h": 42
+					"tile_h": 42,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 80
+					"tile_h": 80,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 61
+					"tile_h": 61,
+					"is_collision": false
 				},
 				{
-					"tile_h": 62
+					"tile_h": 62,
+					"is_collision": false
 				},
 				{
-					"tile_h": 63
+					"tile_h": 63,
+					"is_collision": false
 				},
 				{
-					"tile_h": 64
+					"tile_h": 64,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 9
+					"tile_h": 9,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 83
+					"tile_h": 83,
+					"is_collision": false
 				},
 				{
-					"tile_h": 84
+					"tile_h": 84,
+					"is_collision": false
 				},
 				{
-					"tile_h": 85
+					"tile_h": 85,
+					"is_collision": false
 				},
 				{
-					"tile_h": 86
+					"tile_h": 86,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 145,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 106
+					"tile_h": 106,
+					"is_collision": false
 				},
 				{
-					"tile_h": 107
+					"tile_h": 107,
+					"is_collision": false
 				},
 				{
-					"tile_h": 81
+					"tile_h": 81,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 6,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 8
+					"tile_h": 8,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 31
+					"tile_h": 31,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 151
+					"tile_h": 151,
+					"is_collision": false
 				},
 				{
-					"tile_h": 152
+					"tile_h": 152,
+					"is_collision": false
 				}
 			],
 			[
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 0
+					"tile_h": 0,
+					"is_collision": false
 				},
 				{
-					"tile_h": 173
+					"tile_h": 173,
+					"is_collision": false
 				},
 				{
-					"tile_h": 174
+					"tile_h": 174,
+					"is_collision": false
 				}
 			]
 		]
@@ -2271,8 +2471,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					6,
-					7
+					8,
+					5
 				],
 				"tex_path": "tex/player.png",
 				"movement": {
