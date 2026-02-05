@@ -179,21 +179,31 @@ main :: proc() {
 					r_panel_s_pos.x,
 					r_panel_s_pos.y,
 					r_panel_width,
-					f32(w.tilemap.tileset.tex.height) + r_panel_padding + 25,
+					f32(w.tilemap.tileset.tex.height) + r_panel_padding + 50,
 				},
 				"Tileset",
 			)
 
+			gui.selected_layer = clamp(gui.selected_layer, 0, 1)
+			rl.GuiSpinner(
+				{r_panel_s_pos.x + 35, r_panel_s_pos.y + 30, 100, 25},
+				"Layer",
+				&gui.selected_layer,
+				0,
+				1,
+				true,
+			)
+
 			// tileset pallete
 			selected_tile_h := gui_tileset_pallete(
-				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
+				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 65},
 				&w.tilemap.tileset,
 			)
 			if selected_tile_h != -1 {
 				rl.BeginMode2D(w.camera)
 				mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
 				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-					tile_placement := &w.tilemap.layers[0][pos.y][pos.x]
+					tile_placement := &w.tilemap.layers[gui.selected_layer][pos.y][pos.x]
 
 					if rl.CheckCollisionPointRec(mouse_w_pos, rec(pos)) {
 						rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})

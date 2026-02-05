@@ -14,6 +14,7 @@ GUI :: struct {
 	tileset_pallete: struct {
 		active_tile_h: i32,
 	},
+	selected_layer:  i32,
 }
 
 gui := GUI {
