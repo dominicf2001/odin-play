@@ -190,7 +190,7 @@ main :: proc() {
 
 			rl.GuiCheckBox(
 				{mode_indicator_rec.x - 125, mode_indicator_rec.y, 25, 25},
-				"Show grid",
+				"Hide grid",
 				&editor.hide_grid,
 			)
 
