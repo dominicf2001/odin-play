@@ -200,6 +200,15 @@ main :: proc() {
 				&editor.hide_grid,
 			)
 
+			tilemap_it := tilemap_iterator_make(&w.tilemap)
+			if !editor.hide_grid {
+				rl.BeginMode2D(w.camera)
+				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
+					rl.DrawRectangleLinesEx(rec(tile_pos), 0.5, {0, 0, 0, 50})
+				}
+				rl.EndMode2D()
+			}
+
 			// left panel
 			l_panel_width := f32(75)
 			l_panel_s_pos := Screen_Pos{5, toolbar_height + 5}

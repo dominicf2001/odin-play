@@ -150,10 +150,6 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 					0,
 					rl.WHITE,
 				)
-
-				if !editor.hide_grid {
-					rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
-				}
 			}
 		}
 
