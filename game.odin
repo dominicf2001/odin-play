@@ -84,7 +84,6 @@ main :: proc() {
 				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
 					if !tile_placement.is_collision do continue
 
-					tile_pos := Tile_Pos{u16(tile_pos.x), u16(tile_pos.y)}
 					for _, axis in target_pos {
 						if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
 							target_pos[axis] = og_pos[axis]
