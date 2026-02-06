@@ -9,7 +9,7 @@ import rl "vendor:raylib"
 TILEMAP_W_POS :: World_Pos{0, 0}
 TILE_SIZE :: u16(16)
 ENTITIES_MAX :: 1024
-LAYERS_NUM :: 2
+LAYERS_NUM :: 3
 
 PLAYER_SPEED :: 500.0
 
@@ -134,9 +134,19 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 	rl.DrawRectangleRec(rec(tilemap), rl.WHITE)
 
 	// tile placements
+	has_drawn_entities := false
 
 	tilemap_it := tilemap_iterator_make(tilemap)
 	for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
+		// draw entities on layer 1
+		if layer_num == 2 && !has_drawn_entities {
+			has_drawn_entities = true
+			it := hm.iterator_make(&tilemap.entities)
+			for e in hm.iterate(&it) {
+				entity_draw(e)
+			}
+		}
+
 		tile_h := tile_placement.tile_h
 		if tile_h < 0 || int(tile_h) >= len(tilemap.tileset.tiles) do continue
 
@@ -157,12 +167,6 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 				{0, 0, 0, 50},
 			)
 		}
-	}
-
-	// entities
-	it := hm.iterator_make(&tilemap.entities)
-	for e in hm.iterate(&it) {
-		entity_draw(e)
 	}
 }
 

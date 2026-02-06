@@ -179,14 +179,21 @@ main :: proc() {
 				rl.BLACK,
 			)
 
-			editor.selected_layer = clamp(editor.selected_layer, 0, 1)
 			mode_indicator_rec := rl.Rectangle {
 				mode_indicator_s_pos.x - 125,
 				toolbar_height / 5,
 				100,
 				25,
 			}
-			rl.GuiSpinner(mode_indicator_rec, "Layer", &editor.selected_layer, 0, 1, true)
+			editor.selected_layer = clamp(editor.selected_layer, 0, LAYERS_NUM - 1)
+			rl.GuiSpinner(
+				mode_indicator_rec,
+				"Layer",
+				&editor.selected_layer,
+				0,
+				LAYERS_NUM - 1,
+				true,
+			)
 
 			rl.GuiCheckBox(
 				{mode_indicator_rec.x - 125, mode_indicator_rec.y, 25, 25},
@@ -302,7 +309,7 @@ main :: proc() {
 					rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
 					rl.EndMode2D()
 
-					if rl.IsMouseButtonPressed(.LEFT) {
+					if rl.IsMouseButtonDown(.LEFT) {
 						tile_placement.tile_h = Tile_Handle(
 							editor.component.tileset_pallete.active_index,
 						)
