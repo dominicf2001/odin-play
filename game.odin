@@ -48,12 +48,6 @@ main :: proc() {
 	}
 	defer tilemap_destroy(&w.tilemap)
 
-	// TILEMAP ITERATOR TEST
-	tilemap_it := tilemap_iterator_make(&w.tilemap)
-	for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
-		fmt.println(layer_num, tile_pos)
-	}
-
 	//----------------------------------------------------------------------------------
 
 	for !rl.WindowShouldClose() {
@@ -86,17 +80,14 @@ main :: proc() {
 
 				// check tile collisions
 
-				for &layer in w.tilemap.layers {
-					for &row, y in layer {
-						for &tile_placement, x in row {
-							if !tile_placement.is_collision do continue
+				tilemap_it := tilemap_iterator_make(&w.tilemap)
+				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
+					if !tile_placement.is_collision do continue
 
-							tile_pos := Tile_Pos{u16(x), u16(y)}
-							for _, axis in target_pos {
-								if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
-									target_pos[axis] = og_pos[axis]
-								}
-							}
+					tile_pos := Tile_Pos{u16(tile_pos.x), u16(tile_pos.y)}
+					for _, axis in target_pos {
+						if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
+							target_pos[axis] = og_pos[axis]
 						}
 					}
 				}

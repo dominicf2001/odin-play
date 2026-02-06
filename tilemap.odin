@@ -134,26 +134,28 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 	rl.DrawRectangleRec(rec(tilemap), rl.WHITE)
 
 	// tile placements
-	for &layer in tilemap.layers {
-		for &row, y in layer {
-			for &tile_placement, x in row {
-				tile_h := tile_placement.tile_h
-				if tile_h < 0 || int(tile_h) >= len(tilemap.tileset.tiles) do continue
 
-				tile := tilemap.tileset.tiles[tile_h]
-				rl.DrawTexturePro(
-					tilemap.tileset.tex,
-					{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},
-					rec(Tile_Pos{u16(x), u16(y)}),
-					{},
-					0,
-					rl.WHITE,
-				)
+	tilemap_it := tilemap_iterator_make(tilemap)
+	for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
+		tile_h := tile_placement.tile_h
+		if tile_h < 0 || int(tile_h) >= len(tilemap.tileset.tiles) do continue
 
-				if !editor.hide_grid {
-					rl.DrawRectangleLinesEx(rec(Tile_Pos{u16(x), u16(y)}), 0.5, {0, 0, 0, 50})
-				}
-			}
+		tile := tilemap.tileset.tiles[tile_h]
+		rl.DrawTexturePro(
+			tilemap.tileset.tex,
+			{tile.tileset_pos.x, tile.tileset_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)},
+			rec(Tile_Pos{u16(tile_pos.x), u16(tile_pos.y)}),
+			{},
+			0,
+			rl.WHITE,
+		)
+
+		if !editor.hide_grid {
+			rl.DrawRectangleLinesEx(
+				rec(Tile_Pos{u16(tile_pos.x), u16(tile_pos.y)}),
+				0.5,
+				{0, 0, 0, 50},
+			)
 		}
 	}
 
