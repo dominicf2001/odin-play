@@ -2893,8 +2893,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					6,
-					7
+					5,
+					8
 				],
 				"tex_path": "tex/player.png",
 				"movement": {

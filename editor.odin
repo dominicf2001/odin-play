@@ -12,8 +12,20 @@ Editor_Mode :: enum {
 
 Editor :: struct {
 	mode:                    Editor_Mode,
-	component:               struct {
+	selected_layer:          i32, // 0 ..< LAYERS_NUM
+	selected_tile_h:         Tile_Handle,
+	selected_tile_placement: ^Tile_Placement,
+	selected_entity_h:       Entity_Handle,
+	hide_grid:               bool,
+	input:                   struct {
+		layer_spinner:   struct {
+			value: i32,
+		},
+		grid_checkbox:   struct {
+			is_checked: bool,
+		},
 		entity_list:     struct {
+			handles:      sa.Small_Array(ENTITIES_MAX, Entity_Handle),
 			active_index: i32,
 			scroll_index: i32,
 		},
@@ -21,29 +33,34 @@ Editor :: struct {
 			active_index: i32,
 		},
 	},
-	selected_tile_placement: ^Tile_Placement,
-	selected_layer:          i32,
-	hide_grid:               bool,
 }
 
 editor := Editor {
-	component = {entity_list = {active_index = -1}, tileset_pallete = {active_index = -1}},
+	input = {entity_list = {active_index = -1}, tileset_pallete = {active_index = -1}},
 }
 
-editor_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -> Entity_Handle {
-	entity_list := &editor.component.entity_list
+editor_entity_list :: proc(
+	bounds: rl.Rectangle,
+	entities: ^Entity_Handle_Map,
+	selected_entity_h: Entity_Handle,
+) {
+	entity_list := &editor.input.entity_list
 
 	entity_list_sb := strings.builder_make(context.temp_allocator)
 
-	handles := sa.Small_Array(ENTITIES_MAX, Entity_Handle){}
-	it, num := hm.iterator_make(entities), uint(0)
+	sa.clear(&entity_list.handles)
+	it, i := hm.iterator_make(entities), uint(0)
 	for e in hm.iterate(&it) {
-		sa.append(&handles, e.handle)
+		if e.handle == selected_entity_h {
+			entity_list.active_index = i32(i)
+		}
+
+		sa.append(&entity_list.handles, e.handle)
 		strings.write_string(&entity_list_sb, e.name)
-		if num < hm.len(entities^) - 1 {
+		if i < hm.len(entities^) - 1 {
 			strings.write_byte(&entity_list_sb, ';')
 		}
-		num += 1
+		i += 1
 	}
 	rl.GuiListView(
 		bounds,
@@ -51,14 +68,12 @@ editor_entity_list :: proc(bounds: rl.Rectangle, entities: ^Entity_Handle_Map) -
 		&entity_list.scroll_index,
 		&entity_list.active_index,
 	)
-
-	if handle, ok := sa.get_safe(handles, int(entity_list.active_index)); ok {
-		return handle
-	}
-	return {}
 }
 
-editor_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset, active_tile_h: ^i32) -> i32 {
+editor_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: Tileset, active_tile_h: Tile_Handle) {
+	tileset_pallete := &editor.input.tileset_pallete
+
+	tileset_pallete.active_index = i32(active_tile_h)
 	for &tile, i in tileset.tiles {
 		tile_h := Tile_Handle(i)
 
@@ -83,21 +98,19 @@ editor_tileset_pallete :: proc(s_pos: Screen_Pos, tileset: ^Tileset, active_tile
 		)
 
 		is_mouse_colliding := rl.CheckCollisionPointRec(rl.GetMousePosition(), tile_bounds)
-		if i32(tile_h) == active_tile_h^ {
+		if i32(tile_h) == tileset_pallete.active_index {
 			line_thickness: f32 = is_mouse_colliding ? 2 : 1
 			rl.DrawRectangleLinesEx(tile_bounds, line_thickness, rl.BLACK)
 
 			if is_mouse_colliding && rl.IsMouseButtonPressed(.LEFT) {
-				active_tile_h^ = -1
+				tileset_pallete.active_index = -1
 			}
 		} else if is_mouse_colliding {
 			rl.DrawRectangleLinesEx(tile_bounds, 1, rl.LIGHTGRAY)
 
 			if rl.IsMouseButtonPressed(.LEFT) {
-				active_tile_h^ = i32(tile_h)
+				tileset_pallete.active_index = i32(tile_h)
 			}
 		}
 	}
-
-	return active_tile_h^
 }

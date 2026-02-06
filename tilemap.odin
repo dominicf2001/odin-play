@@ -46,7 +46,7 @@ Tile_Placement :: struct {
 	is_collision: bool,
 }
 
-Tile_Handle :: distinct u16
+Tile_Handle :: distinct i16
 
 Entity :: struct {
 	name:     string,

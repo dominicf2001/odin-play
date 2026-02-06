@@ -1,6 +1,7 @@
 package game
 
 import hm "core:container/handle_map"
+import sa "core:container/small_array"
 import "core:encoding/json"
 import "core:fmt"
 import os "core:os/os2"
@@ -51,9 +52,45 @@ main :: proc() {
 	//----------------------------------------------------------------------------------
 
 	for !rl.WindowShouldClose() {
+		mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
+
 		// UPDATE
 		//----------------------------------------------------------------------------------
 
+		// apply editor inputs
+		editor.selected_tile_h = Tile_Handle(editor.input.tileset_pallete.active_index)
+		editor.mode = editor.selected_tile_h != -1 ? .TILE_PAINT : .TILE_SELECT
+		editor.selected_entity_h, _ = sa.get_safe(
+			editor.input.entity_list.handles,
+			int(editor.input.entity_list.active_index),
+		)
+		editor.hide_grid = editor.input.grid_checkbox.is_checked
+		editor.selected_layer = editor.input.layer_spinner.value
+		if editor.selected_tile_placement != nil {
+			selected_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
+			editor.selected_tile_placement = &w.tilemap.layers[editor.selected_layer][selected_pos.y][selected_pos.x]
+		}
+
+		// handle mouse click
+		if rl.IsMouseButtonDown(.LEFT) {
+			switch (editor.mode) {
+			case .TILE_SELECT:
+				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
+					if rl.IsMouseButtonPressed(.LEFT) {
+						tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
+						cur_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
+						editor.selected_tile_placement = cur_pos == pos ? nil : tile_placement
+					}
+				}
+			case .TILE_PAINT:
+				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
+					tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
+					tile_placement.tile_h = editor.selected_tile_h
+				}
+			}
+		}
+
+		// player
 		if player, ok := hm.get(&w.tilemap.entities, w.tilemap.player_h); ok {
 			is_movement_active := entity_movement_advance(player, rl.GetFrameTime())
 			if !is_movement_active {
@@ -120,11 +157,40 @@ main :: proc() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.BLACK)
 
-		// Tilemap
+		// WORLD
 		{
 			rl.BeginMode2D(w.camera)
 
+			// tilemap
 			tilemap_draw(&w.tilemap)
+
+			// editor world overlay
+
+			// selected entity bounding box
+			if e, ok := hm.get(&w.tilemap.entities, editor.selected_entity_h); ok {
+				e_rec := rec(e)
+				rl.DrawBoundingBox(
+					{{e_rec.x, e_rec.y, 0}, {e_rec.x + e_rec.width, e_rec.y + e_rec.height, 0}},
+					rl.RED,
+				)
+			}
+
+			// selected tile placement
+			if editor.selected_tile_placement != nil {
+				selected_tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
+				rl.DrawRectangleLinesEx(rec(selected_tile_pos), 1, {255, 255, 255, 160})
+			}
+
+			// tile hover
+			if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
+				tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
+				switch (editor.mode) {
+				case .TILE_SELECT:
+					rl.DrawRectangleLinesEx(rec(pos), 1, {255, 255, 255, 200})
+				case .TILE_PAINT:
+					rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
+				}
+			}
 
 			rl.EndMode2D()
 		}
@@ -187,17 +253,21 @@ main :: proc() {
 			rl.GuiSpinner(
 				mode_indicator_rec,
 				"Layer",
-				&editor.selected_layer,
+				&editor.input.layer_spinner.value,
 				0,
 				LAYERS_NUM - 1,
 				true,
 			)
-			editor.selected_layer = clamp(editor.selected_layer, 0, LAYERS_NUM - 1)
+			editor.input.layer_spinner.value = clamp(
+				editor.input.layer_spinner.value,
+				0,
+				LAYERS_NUM - 1,
+			)
 
 			rl.GuiCheckBox(
 				{mode_indicator_rec.x - 125, mode_indicator_rec.y, 25, 25},
 				"Hide grid",
-				&editor.hide_grid,
+				&editor.input.grid_checkbox.is_checked,
 			)
 
 			if !editor.hide_grid {
@@ -218,7 +288,7 @@ main :: proc() {
 			)
 
 			// entity list
-			selected_entity_h := editor_entity_list(
+			editor_entity_list(
 				{
 					l_panel_s_pos.x,
 					l_panel_s_pos.y + 24,
@@ -226,18 +296,8 @@ main :: proc() {
 					f32(rl.GetScreenHeight() - 75),
 				},
 				&w.tilemap.entities,
+				editor.selected_entity_h,
 			)
-			if e, ok := hm.get(&w.tilemap.entities, selected_entity_h); ok {
-				rl.BeginMode2D(w.camera)
-
-				e_rec := rec(e)
-				rl.DrawBoundingBox(
-					{{e_rec.x, e_rec.y, 0}, {e_rec.x + e_rec.width, e_rec.y + e_rec.height, 0}},
-					rl.RED,
-				)
-
-				rl.EndMode2D()
-			}
 
 			// right panel
 			r_panel_padding := f32(10)
@@ -255,72 +315,25 @@ main :: proc() {
 			// tileset pallete
 			editor_tileset_pallete(
 				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
-				&w.tilemap.tileset,
-				&editor.component.tileset_pallete.active_index,
+				w.tilemap.tileset,
+				editor.selected_tile_h,
 			)
-			editor.mode =
-				editor.component.tileset_pallete.active_index != -1 ? .TILE_PAINT : .TILE_SELECT
 
-			mouse_w_pos := rl.GetScreenToWorld2D(rl.GetMousePosition(), w.camera)
-			switch (editor.mode) {
-			case .TILE_SELECT:
-				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-					tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
-
-					rl.BeginMode2D(w.camera)
-					rl.DrawRectangleLinesEx(rec(pos), 1, {255, 255, 255, 200})
-					rl.EndMode2D()
-
-					if rl.IsMouseButtonPressed(.LEFT) {
-						tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
-						if tile_pos == pos {
-							editor.selected_tile_placement = {}
-						} else {
-							editor.selected_tile_placement = tile_placement
-						}
-					}
+			// selected tile placement panel
+			if editor.mode == .TILE_SELECT && editor.selected_tile_placement != nil {
+				placement_panel_rec := rl.Rectangle {
+					r_panel_s_pos.x,
+					r_panel_s_pos.y + r_panel_height + 5,
+					r_panel_width,
+					200,
 				}
-				// else if (rl.IsMouseButtonPressed(.LEFT)) {
-				// 	editor.selected_tile_placement = {}
-				// }
+				rl.GuiPanel(placement_panel_rec, "Tile placement")
 
-				if editor.selected_tile_placement != nil {
-					tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
-					// ensure we are synced with selected layer
-					editor.selected_tile_placement = &w.tilemap.layers[editor.selected_layer][tile_pos.y][tile_pos.x]
-
-					rl.BeginMode2D(w.camera)
-					rl.DrawRectangleLinesEx(rec(tile_pos), 1, {255, 255, 255, 160})
-					rl.EndMode2D()
-
-					placement_panel_rec := rl.Rectangle {
-						r_panel_s_pos.x,
-						r_panel_s_pos.y + r_panel_height + 5,
-						r_panel_width,
-						200,
-					}
-					rl.GuiPanel(placement_panel_rec, "Tile placement")
-
-					rl.GuiCheckBox(
-						{placement_panel_rec.x + 15, placement_panel_rec.y + 40, 25, 25},
-						"Is collision",
-						&editor.selected_tile_placement.is_collision,
-					)
-				}
-			case .TILE_PAINT:
-				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-					tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
-
-					rl.BeginMode2D(w.camera)
-					rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
-					rl.EndMode2D()
-
-					if rl.IsMouseButtonDown(.LEFT) {
-						tile_placement.tile_h = Tile_Handle(
-							editor.component.tileset_pallete.active_index,
-						)
-					}
-				}
+				rl.GuiCheckBox(
+					{placement_panel_rec.x + 15, placement_panel_rec.y + 40, 25, 25},
+					"Is collision",
+					&editor.selected_tile_placement.is_collision,
+				)
 			}
 		}
 
