@@ -83,13 +83,22 @@ main :: proc() {
 				for &layer in w.tilemap.layers {
 					for &row, y in layer {
 						for &tile_placement, x in row {
+							if !tile_placement.is_collision do continue
+
 							tile_pos := Tile_Pos{u16(x), u16(y)}
-							if tile_placement.is_collision {
+							for _, axis in target_pos {
 								if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
-									target_pos = og_pos
+									target_pos[axis] = og_pos[axis]
 								}
 							}
 						}
+					}
+				}
+
+				// check tilemap OOB
+				for _, axis in target_pos {
+					if !rl.CheckCollisionRecs(rec(target_pos), rec(&w.tilemap)) {
+						target_pos[axis] = og_pos[axis]
 					}
 				}
 
@@ -174,13 +183,18 @@ main :: proc() {
 			)
 
 			editor.selected_layer = clamp(editor.selected_layer, 0, 1)
-			rl.GuiSpinner(
-				{mode_indicator_s_pos.x - 125, toolbar_height / 5, 100, 25},
-				"Layer",
-				&editor.selected_layer,
-				0,
-				1,
-				true,
+			mode_indicator_rec := rl.Rectangle {
+				mode_indicator_s_pos.x - 125,
+				toolbar_height / 5,
+				100,
+				25,
+			}
+			rl.GuiSpinner(mode_indicator_rec, "Layer", &editor.selected_layer, 0, 1, true)
+
+			rl.GuiCheckBox(
+				{mode_indicator_rec.x - 125, mode_indicator_rec.y, 25, 25},
+				"Show grid",
+				&editor.hide_grid,
 			)
 
 			// left panel

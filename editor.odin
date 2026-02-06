@@ -26,6 +26,7 @@ Editor :: struct {
 		pos:  Tile_Pos,
 	},
 	selected_layer:          i32,
+	hide_grid:               bool,
 }
 
 editor := Editor {

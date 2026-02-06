@@ -1608,15 +1608,15 @@
 				},
 				{
 					"tile_h": 145,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 145,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 185,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 187,
@@ -1646,19 +1646,19 @@
 			[
 				{
 					"tile_h": 145,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 142,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 143,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 164,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 187,
@@ -1688,11 +1688,11 @@
 			[
 				{
 					"tile_h": 142,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 164,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 187,
@@ -1730,11 +1730,11 @@
 			[
 				{
 					"tile_h": 207,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 208,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 187,
@@ -1772,11 +1772,11 @@
 			[
 				{
 					"tile_h": 145,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 185,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 179,
@@ -1814,11 +1814,11 @@
 			[
 				{
 					"tile_h": 143,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 164,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 187,
@@ -1829,7 +1829,7 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 187,
+					"tile_h": 73,
 					"is_collision": false
 				},
 				{
@@ -1863,15 +1863,15 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 165,
-					"is_collision": false
-				},
-				{
 					"tile_h": 187,
 					"is_collision": false
 				},
 				{
-					"tile_h": 187,
+					"tile_h": 73,
+					"is_collision": false
+				},
+				{
+					"tile_h": 73,
 					"is_collision": false
 				},
 				{
@@ -1905,7 +1905,7 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 187,
+					"tile_h": 73,
 					"is_collision": false
 				},
 				{
@@ -2014,11 +2014,11 @@
 				},
 				{
 					"tile_h": 187,
-					"is_collision": false
+					"is_collision": true
 				},
 				{
 					"tile_h": 187,
-					"is_collision": false
+					"is_collision": true
 				}
 			]
 		],
@@ -2209,7 +2209,7 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 31,
+					"tile_h": 30,
 					"is_collision": false
 				},
 				{
@@ -2247,7 +2247,7 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 31,
+					"tile_h": 30,
 					"is_collision": false
 				},
 				{
@@ -2327,7 +2327,11 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 0,
+					"tile_h": 30,
+					"is_collision": false
+				},
+				{
+					"tile_h": 30,
 					"is_collision": false
 				},
 				{
@@ -2343,11 +2347,7 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 0,
-					"is_collision": false
-				},
-				{
-					"tile_h": 0,
+					"tile_h": 30,
 					"is_collision": false
 				},
 				{
@@ -2471,8 +2471,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					8,
-					5
+					2,
+					8
 				],
 				"tex_path": "tex/player.png",
 				"movement": {
