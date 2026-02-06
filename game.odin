@@ -184,7 +184,6 @@ main :: proc() {
 				100,
 				25,
 			}
-			editor.selected_layer = clamp(editor.selected_layer, 0, LAYERS_NUM - 1)
 			rl.GuiSpinner(
 				mode_indicator_rec,
 				"Layer",
@@ -193,6 +192,7 @@ main :: proc() {
 				LAYERS_NUM - 1,
 				true,
 			)
+			editor.selected_layer = clamp(editor.selected_layer, 0, LAYERS_NUM - 1)
 
 			rl.GuiCheckBox(
 				{mode_indicator_rec.x - 125, mode_indicator_rec.y, 25, 25},
@@ -200,9 +200,9 @@ main :: proc() {
 				&editor.hide_grid,
 			)
 
-			tilemap_it := tilemap_iterator_make(&w.tilemap)
 			if !editor.hide_grid {
 				rl.BeginMode2D(w.camera)
+				tilemap_it := tilemap_iterator_make(&w.tilemap)
 				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
 					rl.DrawRectangleLinesEx(rec(tile_pos), 0.5, {0, 0, 0, 50})
 				}
@@ -272,13 +272,11 @@ main :: proc() {
 					rl.EndMode2D()
 
 					if rl.IsMouseButtonPressed(.LEFT) {
-						if editor.selected_tile_placement.pos == pos {
+						tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
+						if tile_pos == pos {
 							editor.selected_tile_placement = {}
 						} else {
-							editor.selected_tile_placement = {
-								data = tile_placement,
-								pos  = pos,
-							}
+							editor.selected_tile_placement = tile_placement
 						}
 					}
 				}
@@ -286,13 +284,13 @@ main :: proc() {
 				// 	editor.selected_tile_placement = {}
 				// }
 
-				if editor.selected_tile_placement.data != nil {
+				if editor.selected_tile_placement != nil {
+					tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
+					// ensure we are synced with selected layer
+					editor.selected_tile_placement = &w.tilemap.layers[editor.selected_layer][tile_pos.y][tile_pos.x]
+
 					rl.BeginMode2D(w.camera)
-					rl.DrawRectangleLinesEx(
-						rec(editor.selected_tile_placement.pos),
-						1,
-						{255, 255, 255, 160},
-					)
+					rl.DrawRectangleLinesEx(rec(tile_pos), 1, {255, 255, 255, 160})
 					rl.EndMode2D()
 
 					placement_panel_rec := rl.Rectangle {
@@ -306,7 +304,7 @@ main :: proc() {
 					rl.GuiCheckBox(
 						{placement_panel_rec.x + 15, placement_panel_rec.y + 40, 25, 25},
 						"Is collision",
-						&editor.selected_tile_placement.data.is_collision,
+						&editor.selected_tile_placement.is_collision,
 					)
 				}
 			case .TILE_PAINT:

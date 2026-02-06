@@ -2041,8 +2041,8 @@
 					"is_collision": false
 				},
 				{
-					"tile_h": 0,
-					"is_collision": false
+					"tile_h": 58,
+					"is_collision": true
 				},
 				{
 					"tile_h": 0,
@@ -2277,11 +2277,11 @@
 			],
 			[
 				{
-					"tile_h": 0,
-					"is_collision": false
+					"tile_h": 59,
+					"is_collision": true
 				},
 				{
-					"tile_h": 31,
+					"tile_h": 7,
 					"is_collision": false
 				},
 				{
@@ -2893,8 +2893,8 @@
 			{
 				"name": "Player",
 				"pos": [
-					5,
-					8
+					6,
+					7
 				],
 				"tex_path": "tex/player.png",
 				"movement": {

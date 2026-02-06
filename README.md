@@ -29,4 +29,5 @@
 
 ## TODO
 
-- Create/loading tile based maps
+- Decide how to handle collisions
+  - Should they be entities?

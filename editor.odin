@@ -21,10 +21,7 @@ Editor :: struct {
 			active_index: i32,
 		},
 	},
-	selected_tile_placement: struct {
-		data: ^Tile_Placement,
-		pos:  Tile_Pos,
-	},
+	selected_tile_placement: ^Tile_Placement,
 	selected_layer:          i32,
 	hide_grid:               bool,
 }

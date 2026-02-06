@@ -200,6 +200,16 @@ tilemap_rec :: proc(tilemap: ^Tilemap) -> rl.Rectangle {
 	}
 }
 
+tile_placement_pos :: proc(tilemap: ^Tilemap, tile_placement: ^Tile_Placement) -> Tile_Pos {
+	it := tilemap_iterator_make(tilemap)
+	for checked_tile_placement, tile_pos in tilemap_iterate(&it) {
+		if tile_placement == checked_tile_placement {
+			return tile_pos
+		}
+	}
+	return {}
+}
+
 tile_rec :: proc(pos: Tile_Pos) -> rl.Rectangle {
 	w_pos := tile_pos_to_world(pos)
 	return {w_pos.x, w_pos.y, f32(TILE_SIZE), f32(TILE_SIZE)}
