@@ -9,15 +9,22 @@ import rl "vendor:raylib"
 TILEMAP_W_POS :: World_Pos{0, 0}
 TILE_SIZE :: u16(16)
 ENTITIES_MAX :: 1024
+LAYERS_NUM :: 2
 
 PLAYER_SPEED :: 500.0
 
 Tilemap :: struct {
 	dim:      Tilemap_Dim,
 	tileset:  Tileset,
-	layers:   [2][dynamic][dynamic]Tile_Placement,
+	layers:   [LAYERS_NUM][dynamic][dynamic]Tile_Placement,
 	entities: Entity_Handle_Map,
 	player_h: Entity_Handle,
+}
+
+Tilemap_Iterator :: struct {
+	layer_num: int,
+	pos:       Tile_Pos,
+	data:      ^Tilemap,
 }
 
 Tilemap_Dim :: distinct [2]u16 // by tiles
@@ -155,6 +162,35 @@ tilemap_draw :: proc(tilemap: ^Tilemap) {
 	for e in hm.iterate(&it) {
 		entity_draw(e)
 	}
+}
+
+tilemap_iterator_make :: proc(tilemap: ^Tilemap) -> Tilemap_Iterator {
+	return {data = tilemap, pos = {0, 0}}
+}
+
+tilemap_iterate :: proc(it: ^Tilemap_Iterator) -> (^Tile_Placement, Tile_Pos, int, bool) {
+	if it.layer_num >= len(it.data.layers) {
+		return {}, {}, {}, false
+	}
+
+	layer_num := it.layer_num
+	layer := it.data.layers[layer_num]
+	tile_pos := it.pos
+	row := layer[tile_pos.y]
+	tile_placement := &row[tile_pos.x]
+
+	it.pos.x += 1
+	if int(it.pos.x) >= len(row) {
+		it.pos.y += 1
+		it.pos.x = 0
+	}
+
+	if int(it.pos.y) >= len(layer) {
+		it.layer_num += 1
+		it.pos = {}
+	}
+
+	return tile_placement, tile_pos, layer_num, true
 }
 
 tilemap_rec :: proc(tilemap: ^Tilemap) -> rl.Rectangle {

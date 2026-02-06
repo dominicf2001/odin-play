@@ -48,6 +48,12 @@ main :: proc() {
 	}
 	defer tilemap_destroy(&w.tilemap)
 
+	// TILEMAP ITERATOR TEST
+	tilemap_it := tilemap_iterator_make(&w.tilemap)
+	for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
+		fmt.println(layer_num, tile_pos)
+	}
+
 	//----------------------------------------------------------------------------------
 
 	for !rl.WindowShouldClose() {
