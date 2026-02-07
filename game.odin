@@ -160,15 +160,6 @@ main :: proc() {
 
 			// editor world overlay
 
-			// selected entity bounding box
-			if e, ok := hm.get(&w.tilemap.entities, editor.selected_entity_h); ok {
-				e_rec := rec(e)
-				rl.DrawBoundingBox(
-					{{e_rec.x, e_rec.y, 0}, {e_rec.x + e_rec.width, e_rec.y + e_rec.height, 0}},
-					rl.RED,
-				)
-			}
-
 			// selected tile placement
 			if editor.selected_tile_placement != nil {
 				selected_tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
@@ -192,6 +183,15 @@ main :: proc() {
 				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
 					rl.DrawRectangleLinesEx(rec(tile_pos), 0.5, {0, 0, 0, 50})
 				}
+			}
+
+			// selected entity bounding box
+			if e, ok := hm.get(&w.tilemap.entities, editor.selected_entity_h); ok {
+				e_rec := rec(e)
+				rl.DrawBoundingBox(
+					{{e_rec.x, e_rec.y, 0}, {e_rec.x + e_rec.width, e_rec.y + e_rec.height, 0}},
+					rl.RED,
+				)
 			}
 
 			rl.EndMode2D()
