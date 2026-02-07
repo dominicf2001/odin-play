@@ -160,19 +160,22 @@ main :: proc() {
 
 			// editor world overlay
 
-			// selected tile placement
-			if editor.selected_tile_placement != nil {
-				selected_tile_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
-				rl.DrawRectangleLinesEx(rec(selected_tile_pos), 1, {255, 255, 255, 160})
-			}
 
-			// tile hover
-			if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
-				tile_placement := &w.tilemap.layers[editor.selected_layer][pos.y][pos.x]
-				switch (editor.mode) {
-				case .TILE_SELECT:
+			switch (editor.mode) {
+			case .TILE_SELECT:
+				if editor.selected_tile_placement != nil {
+					selected_tile_pos := tile_placement_pos(
+						&w.tilemap,
+						editor.selected_tile_placement,
+					)
+					rl.DrawRectangleLinesEx(rec(selected_tile_pos), 1, {255, 255, 255, 160})
+				}
+
+				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
 					rl.DrawRectangleLinesEx(rec(pos), 1, {255, 255, 255, 200})
-				case .TILE_PAINT:
+				}
+			case .TILE_PAINT:
+				if pos, ok := world_pos_to_tile(&w.tilemap, mouse_w_pos); ok {
 					rl.DrawRectangleRec(rec(pos), {0, 0, 0, 50})
 				}
 			}
