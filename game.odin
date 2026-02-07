@@ -2,6 +2,7 @@ package game
 
 import hm "core:container/handle_map"
 import sa "core:container/small_array"
+import "core:encoding/ini"
 import "core:encoding/json"
 import "core:fmt"
 import os "core:os/os2"
@@ -57,15 +58,8 @@ main :: proc() {
 		// UPDATE
 		//----------------------------------------------------------------------------------
 
-		// apply editor inputs
-		editor.selected_tile_h = Tile_Handle(editor.input.tileset_pallete.active_index)
-		editor.mode = editor.selected_tile_h != -1 ? .TILE_PAINT : .TILE_SELECT
-		editor.selected_entity_h, _ = sa.get_safe(
-			editor.input.entity_list.handles,
-			int(editor.input.entity_list.active_index),
-		)
-		editor.hide_grid = editor.input.grid_checkbox.is_checked
-		editor.selected_layer = editor.input.layer_spinner.value
+		// editor state
+		editor_apply_input()
 		if editor.selected_tile_placement != nil {
 			selected_pos := tile_placement_pos(&w.tilemap, editor.selected_tile_placement)
 			editor.selected_tile_placement = &w.tilemap.layers[editor.selected_layer][selected_pos.y][selected_pos.x]
@@ -192,147 +186,49 @@ main :: proc() {
 				}
 			}
 
+			// tile placement grid
+			if !editor.hide_grid {
+				tilemap_it := tilemap_iterator_make(&w.tilemap)
+				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
+					rl.DrawRectangleLinesEx(rec(tile_pos), 0.5, {0, 0, 0, 50})
+				}
+			}
+
 			rl.EndMode2D()
 		}
 
 		// GUI
 		{
 			// toolbar
-			bg_color := rl.GetColor(
-				u32(
-					rl.GuiGetStyle(
-						rl.GuiControl.DEFAULT,
-						i32(rl.GuiDefaultProperty.BACKGROUND_COLOR),
-					),
-				),
-			)
+			toolbar_rec := editor_toolbar(w)
 
-			toolbar_height := f32(40)
-			rl.DrawRectangleRec({0, 0, f32(rl.GetScreenWidth()), toolbar_height}, bg_color)
-
-			// save button
-			if rl.GuiButton(
-				{5, toolbar_height / 5, toolbar_height * 2, toolbar_height / 1.5},
-				"Save",
-			) {
-				if data, err := json.marshal(w.tilemap, {pretty = true}); err != nil {
-					fmt.eprintfln("Unable to marshal tilemap: %v", err)
-				} else {
-					if err := os.write_entire_file("data/tilemap.json", data); err != nil {
-						fmt.eprintfln("Unable to write tilemap: %v", err)
-					}
-				}
-			}
-
-			// mode indicator
-			mode_text: cstring
-			switch (editor.mode) {
-			case .TILE_SELECT:
-				mode_text = "-- TILE SELECT -- "
-			case .TILE_PAINT:
-				mode_text = "-- TILE PAINT -- "
-			}
-			mode_indicator_s_pos := Screen_Pos {
-				f32(rl.GetScreenWidth() - i32(len(mode_text)) * 6),
-				toolbar_height / 2.5,
-			}
-			rl.DrawText(
-				mode_text,
-				i32(mode_indicator_s_pos.x),
-				i32(mode_indicator_s_pos.y),
-				4,
-				rl.BLACK,
-			)
-
-			mode_indicator_rec := rl.Rectangle {
-				mode_indicator_s_pos.x - 125,
-				toolbar_height / 5,
-				100,
-				25,
-			}
-			rl.GuiSpinner(
-				mode_indicator_rec,
-				"Layer",
-				&editor.input.layer_spinner.value,
-				0,
-				LAYERS_NUM - 1,
-				true,
-			)
-			editor.input.layer_spinner.value = clamp(
-				editor.input.layer_spinner.value,
-				0,
-				LAYERS_NUM - 1,
-			)
-
-			rl.GuiCheckBox(
-				{mode_indicator_rec.x - 125, mode_indicator_rec.y, 25, 25},
-				"Hide grid",
-				&editor.input.grid_checkbox.is_checked,
-			)
-
-			if !editor.hide_grid {
-				rl.BeginMode2D(w.camera)
-				tilemap_it := tilemap_iterator_make(&w.tilemap)
-				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
-					rl.DrawRectangleLinesEx(rec(tile_pos), 0.5, {0, 0, 0, 50})
-				}
-				rl.EndMode2D()
-			}
-
-			// left panel
-			l_panel_width := f32(75)
-			l_panel_s_pos := Screen_Pos{5, toolbar_height + 5}
-			rl.GuiPanel(
-				{l_panel_s_pos.x, l_panel_s_pos.y, l_panel_width, f32(rl.GetScreenHeight() - 75)},
-				"Entities",
-			)
-
-			// entity list
-			editor_entity_list(
-				{
-					l_panel_s_pos.x,
-					l_panel_s_pos.y + 24,
-					l_panel_width,
-					f32(rl.GetScreenHeight() - 75),
-				},
+			// entity panel
+			editor_entity_panel(
+				{5, toolbar_rec.height + 5, 75, f32(rl.GetScreenHeight() - 75)},
 				&w.tilemap.entities,
 				editor.selected_entity_h,
 			)
 
-			// right panel
-			r_panel_padding := f32(10)
-			r_panel_width := f32(w.tilemap.tileset.tex.width) + r_panel_padding
-			r_panel_height := f32(w.tilemap.tileset.tex.height) + r_panel_padding + 25
-			r_panel_s_pos := Screen_Pos {
-				f32(rl.GetScreenWidth()) - r_panel_width - 5,
-				toolbar_height + 5,
-			}
-			rl.GuiPanel(
-				{r_panel_s_pos.x, r_panel_s_pos.y, r_panel_width, r_panel_height},
-				"Tileset",
-			)
-
-			// tileset pallete
-			editor_tileset_pallete(
-				r_panel_s_pos + {r_panel_padding / 2, (-r_panel_padding / 2) + 35},
-				w.tilemap.tileset,
+			// tileset panel
+			tileset_panel_rec := editor_tileset_panel(
+				{
+					f32(rl.GetScreenWidth()) - f32(w.tilemap.tileset.tex.width) - 5,
+					toolbar_rec.height + 5,
+				},
+				w.tilemap,
 				editor.selected_tile_h,
 			)
 
 			// selected tile placement panel
 			if editor.mode == .TILE_SELECT && editor.selected_tile_placement != nil {
-				placement_panel_rec := rl.Rectangle {
-					r_panel_s_pos.x,
-					r_panel_s_pos.y + r_panel_height + 5,
-					r_panel_width,
-					200,
-				}
-				rl.GuiPanel(placement_panel_rec, "Tile placement")
-
-				rl.GuiCheckBox(
-					{placement_panel_rec.x + 15, placement_panel_rec.y + 40, 25, 25},
-					"Is collision",
-					&editor.selected_tile_placement.is_collision,
+				editor_tile_placement_panel(
+					{
+						tileset_panel_rec.x,
+						tileset_panel_rec.y + tileset_panel_rec.height + 5,
+						tileset_panel_rec.width,
+						200,
+					},
+					editor.selected_tile_placement^,
 				)
 			}
 		}
