@@ -98,37 +98,75 @@ main :: proc() {
 				if rl.IsKeyDown(.D) do target_pos.x += 1
 
 				// check entity collisions
-				it := hm.iterator_make(&w.tilemap.entities)
-				for e in hm.iterate(&it) {
+				entity_it := hm.iterator_make(&w.tilemap.entities)
+				for e in hm.iterate(&entity_it) {
 					if player == e do continue
 
 					for _, axis in target_pos {
-						if rl.CheckCollisionRecs(rec(target_pos), rec(e)) {
+						attempt_pos := og_pos
+						attempt_pos[axis] = target_pos[axis]
+						if rl.CheckCollisionRecs(rec(attempt_pos), rec(e)) {
 							target_pos[axis] = og_pos[axis]
+						}
+					}
+
+					// handle diagonal collision
+					if rl.CheckCollisionRecs(rec(target_pos), rec(e)) {
+						for _, axis in target_pos {
+							attempt_pos := og_pos
+							attempt_pos[axis] = target_pos[axis]
+							if !rl.CheckCollisionRecs(rec(attempt_pos), rec(e)) {
+								target_pos = attempt_pos
+								break
+							}
+						}
+
+						if rl.CheckCollisionRecs(rec(target_pos), rec(e)) {
+							target_pos = og_pos
 						}
 					}
 				}
 
 				// check tile collisions
-
 				tilemap_it := tilemap_iterator_make(&w.tilemap)
 				for tile_placement, tile_pos, layer_num in tilemap_iterate(&tilemap_it) {
 					if !tile_placement.is_collision do continue
 
 					for _, axis in target_pos {
-						if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
+						attempt_pos := og_pos
+						attempt_pos[axis] = target_pos[axis]
+						if rl.CheckCollisionRecs(rec(attempt_pos), rec(tile_pos)) {
 							target_pos[axis] = og_pos[axis]
+						}
+					}
+
+					// handle diagonal collision
+					if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
+						for _, axis in target_pos {
+							attempt_pos := og_pos
+							attempt_pos[axis] = target_pos[axis]
+							if !rl.CheckCollisionRecs(rec(attempt_pos), rec(tile_pos)) {
+								target_pos = attempt_pos
+								break
+							}
+						}
+
+						if rl.CheckCollisionRecs(rec(target_pos), rec(tile_pos)) {
+							target_pos = og_pos
 						}
 					}
 				}
 
 				// check tilemap OOB
 				for _, axis in target_pos {
-					if !rl.CheckCollisionRecs(rec(target_pos), rec(&w.tilemap)) {
+					attempt_pos := og_pos
+					attempt_pos[axis] = target_pos[axis]
+					if !rl.CheckCollisionRecs(rec(attempt_pos), rec(&w.tilemap)) {
 						target_pos[axis] = og_pos[axis]
 					}
 				}
 
+				// start movement
 				if target_pos != og_pos {
 					entity_movement_start(player, target_pos)
 				}
@@ -159,7 +197,6 @@ main :: proc() {
 			tilemap_draw(&w.tilemap)
 
 			// editor world overlay
-
 
 			switch (editor.mode) {
 			case .TILE_SELECT:
